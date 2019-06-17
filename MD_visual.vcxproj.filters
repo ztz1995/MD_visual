@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\ofApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\atom_structure.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{7ff6b276-bfaf-4370-9f39-f19023a47b07}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ofApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\atom_structure.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\json.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\atom_info_000.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_001.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_002.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_003.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_004.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_005.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_006.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_007.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_008.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_009.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_010.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_011.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_012.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_013.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_014.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_015.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_016.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_017.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_018.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_019.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_020.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_021.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_022.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_023.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_024.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_025.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_026.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_027.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_028.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_029.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_030.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_031.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_032.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_033.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_034.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_035.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_036.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_037.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_038.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_039.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_040.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_041.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_042.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_043.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_044.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_045.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_046.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_047.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_048.json">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\atom_info_049.json">
+      <Filter>data</Filter>
+    </None>
+  </ItemGroup>
+</Project>

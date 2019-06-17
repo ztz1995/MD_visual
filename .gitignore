@@ -1,6 +1,8 @@
 bin
 obj
-
+MD_visual*
+icon.rc
+addons.make
 
 .idea/*
 *test*

@@ -1,5 +1,31 @@
+#pragma once
 
 #include "atom_structure.h"
+#include <cmath>
+
+float cal_vdw(Atom atom1, Atom atom2, float r) {
+	float r_i = atom1.f_r, r_j = atom2.f_r;
+	float f_v = 0.;
+	if (r < 9.5) {
+		float r_ij = pow((pow(r_i, 6) + pow(r_j, 6) / 2), 1 / 6);
+		float f_e = 2*sqrt(atom1.f_e * atom2.f_e) / pow(r_i, 3) / pow(r_j, 3);
+		f_v = 18 * f_e / r_ij * (pow((r_ij / r), 5) - pow((r_ij / r), 8));
+	}
+	return f_v;
+}
+
+float cal_elec(Atom atom1, Atom atom2, float r) {
+	float f_e = 0.;
+	if (r < 9.5) {
+		f_e = atom1.charge * atom2.charge / r / r;
+	}
+	return f_e;
+}
+
+float cal_frc(Atom atom1, Atom atom2) {
+	float r = atom1.coordinate.distance(atom2.coordinate);
+	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
+}
 
 Atom::Atom() {
 	this->id = 0;

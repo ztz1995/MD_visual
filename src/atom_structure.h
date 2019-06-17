@@ -10,6 +10,10 @@
 using namespace std;
 using namespace nlohmann;
 
+float cal_vdw(Atom atom1, Atom atom2, float r);
+float cal_elec(Atom atom1, Atom atom2, float r);
+float cal_frc(Atom atom1, Atom atom2);
+
 class Atom {
 public:
 	int id=0;
@@ -32,6 +36,7 @@ public:
 	map<int, Atom> atom_map;
 	//vector<int> group_info;
 	void append_atom(Atom _atom);
+	
 };
 
 class Atom3D {

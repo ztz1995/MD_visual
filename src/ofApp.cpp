@@ -14,7 +14,7 @@ void ofApp::setup() {
 	ofSetFrameRate(60);
 	ofEnableDepthTest();
 	ofBackground(20);
-	mycam.setDistance(atom3d[current_frame].length * 2);
+	mycam.setDistance(atom3d[current_frame].axis_length * 2);
 	ofResetElapsedTimeCounter();
 }
 
@@ -22,7 +22,7 @@ void ofApp::setup() {
 void ofApp::update() {
 	current_time = ofGetElapsedTimeMicros();
 	current_frame = (current_time / frame_every) % frame_num;
-	axis.update(atom3d[current_frame].length);
+	axis.update(atom3d[current_frame].axis_length);
 }
 
 //--------------------------------------------------------------
@@ -33,7 +33,8 @@ void ofApp::draw() {
 
 	AtomGroup draw_group = atom3d[current_frame].group_map[0];
 	for (auto map_it = draw_group.atom_map.begin(); map_it != draw_group.atom_map.end(); map_it++) {
-		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 3.);
+		ofSetColor(3, 168, 158, 230);
+		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
 	}
 
 	mycam.end();

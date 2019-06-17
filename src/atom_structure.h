@@ -10,45 +10,34 @@
 using namespace std;
 using namespace nlohmann;
 
-float cal_vdw(Atom atom1, Atom atom2, float r);
-float cal_elec(Atom atom1, Atom atom2, float r);
-float cal_frc(Atom atom1, Atom atom2);
-
 class Atom {
 public:
-	int id=0;
-	int group_id=0;
-	string group_type, element;
+	int id=0, group_id=0, mole_id=0;
+	string group_type="", element="";
 	double f_e=0., f_r=0., charge=0.;
-	ofVec3f coordinate;
+	ofVec3f coordinate = ofVec3f(0., 0., 0.);
 	Atom();
-	Atom(int _id, int _group_id, string _group_type, string _element, vector<float> _co, double _f_e, double _f_r, double _charge);
-	//string to_str();
-	//void print();
+	Atom::Atom(json atm_js, float axis_length);
 };
 
 class AtomGroup {
 public:
-	AtomGroup();
-	AtomGroup(int _group_id, string _group_type);
-	int group_id=0;
+	int group_id = 0, mole_id = 0;
 	string group_type = "";
 	map<int, Atom> atom_map;
-	//vector<int> group_info;
+
+	AtomGroup();
+	AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type);
 	void append_atom(Atom _atom);
-	
 };
 
 class Atom3D {
 public:
+	float axis_length = 0.;
 	map<int, AtomGroup> group_map;
-	//map<int, string> group_type_map;
 	void append_atom(Atom input_atom);
 	void load_from_json(string fp);
-	float length = 0.;
-	//void print();
 };
-
 
 class Axis {
 public:
@@ -65,3 +54,6 @@ private:
 	float length;
 };
 
+float cal_vdw(Atom atom1, Atom atom2, float r);
+float cal_elec(Atom atom1, Atom atom2, float r);
+float cal_frc(Atom atom1, Atom atom2);

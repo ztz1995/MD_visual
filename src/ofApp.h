@@ -24,7 +24,7 @@ public:
 	ofEasyCam mycam;
 	Axis axis;
 	
-	const static int frame_num = 50;
+	const static int frame_num = 5;
 	Atom3D atom3d[frame_num];
 
 	uint64_t current_time;

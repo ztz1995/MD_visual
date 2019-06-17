@@ -27,37 +27,28 @@ float cal_frc(Atom atom1, Atom atom2) {
 	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
 }
 
-Atom::Atom() {
-	this->id = 0;
-	this->group_id = 0;
-	this->coordinate = ofVec3f(0.,0.,0.);
-	this->element = "";
-}
+Atom::Atom() {};
 
-Atom::Atom(int _id, int _group_id, string _group_type, string _element, vector<float> _co, double _f_e, double _f_r, double _charge) {
-	this->id = _id;
-	this->group_id = _group_id;
-	this->group_type = _group_type;
-	this->element = _element;
-	this->coordinate = ofVec3f(_co[0], _co[1], _co[2]);
-	this->f_e = _f_e;
-	this->f_r = _f_r;
-	this->charge = _charge;
+Atom::Atom(json atm_js, float axis_length) {
+	int id = atm_js["id"], group_id = atm_js["group_id"], mole_id = atm_js["mole_id"];
+	string group_type = atm_js["group_type"], element = atm_js["element"];
+	vector<float> co = atm_js["coordinate"];
+	double f_e = atm_js["f_e"], f_r = atm_js["f_r"], charge = atm_js["charge"];
+	this->id = id;
+	this->group_id = group_id;
+	this->group_type = group_type;
+	this->element = element;
+	this->coordinate = ofVec3f(co[0]-axis_length, co[1] - axis_length, co[2] - axis_length);
+	this->f_e = f_e;
+	this->f_r = f_r;
+	this->charge = charge;
 }
-
-//string Atom::to_str() {
-//	return string("Atom id: ") + to_string(id) + string(", group_id: ") + to_string(group_id) + string(", type: ") + type + string(", element: ") + element
-//		+ string(", coordiante: [") + to_string(coordinate[0]) + string(", ") + to_string(coordinate[1]) + string(", ") + to_string(coordinate[2]) + string("]\n");
-//}
-//
-//void Atom::print() {
-//	cout << to_str();
-//}
 
 AtomGroup::AtomGroup() {};
 
-AtomGroup::AtomGroup(int _group_id, string _group_type) {
+AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type) {
 	this->group_id = _group_id;
+	this->mole_id = _mole_id;
 	this->group_type = _group_type;
 }
 
@@ -75,7 +66,7 @@ void Atom3D::append_atom(Atom _atom) {
 		group_map[_atom.group_id].append_atom(_atom);
 	}
 	else {
-		AtomGroup new_group(_atom.group_id, _atom.group_type);
+		AtomGroup new_group(_atom.group_id, _atom.mole_id, _atom.group_type);
 		new_group.append_atom(_atom);
 		group_map.insert(make_pair(_atom.group_id, new_group));
 	}
@@ -85,29 +76,15 @@ void Atom3D::load_from_json(string fp) {
 	ifstream in_file(fp);
 	json atom_info;
 	in_file >> atom_info;
+	this->axis_length = atom_info["length"];
 	for (json::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
 		if (it.key() != "length") {
 			json atm_json = it.value();
-			int id = atm_json["id"], group_id = atm_json["group_id"];
-			string group_type = atm_json["group_type"], element = atm_json["element"];
-			vector<float> co = atm_json["coordinate"];
-			double f_e = atm_json["f_e"], f_r = atm_json["f_r"], charge = atm_json["charge"];
-			Atom new_atom(id, group_id, group_type, element, co, f_e, f_r, charge);
+			Atom new_atom(atm_json, this->axis_length);
 			append_atom(new_atom);
-		}
-		else {
-			float _l = it.value();
-			this->length = _l;
 		}
 	}
 }
-
-//void Atom3D::print() {
-//	map<int, Atom>::iterator it;
-//	for (it = atom_map.begin(); it != atom_map.end(); it++) {
-//		it->second.print();
-//	}
-//}
 
 // Axis implement
 Axis::Axis() {

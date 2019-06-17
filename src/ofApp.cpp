@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include <windows.h>
 
 //--------------------------------------------------------------
 void ofApp::setup() {

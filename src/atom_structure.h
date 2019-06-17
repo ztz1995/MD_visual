@@ -29,6 +29,9 @@ public:
 	AtomGroup();
 	AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type);
 	void append_atom(Atom _atom);
+
+	void draw();
+	void draw(ofColor color);
 };
 
 class Atom3D {

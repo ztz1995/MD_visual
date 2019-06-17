@@ -45,19 +45,29 @@ Atom::Atom(json atm_js, float axis_length) {
 }
 
 AtomGroup::AtomGroup() {};
-
 AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type) {
 	this->group_id = _group_id;
 	this->mole_id = _mole_id;
 	this->group_type = _group_type;
 }
-
 void AtomGroup::append_atom(Atom _atom) {
 	if (this->atom_map.count(_atom.id)) {
 		throw "Atom already exist!";
 	}
 	else {
 		atom_map.insert(make_pair(_atom.id, _atom));
+	}
+}
+void AtomGroup::draw() {
+	ofSetColor(3, 168, 158, 230);
+	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
+	}
+}
+void AtomGroup::draw(ofColor color) {
+	ofSetColor(color);
+	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
 	}
 }
 

@@ -30,12 +30,7 @@ void ofApp::draw() {
 	mycam.begin();
 	axis.draw();
 	// here you will draw your object
-
-	AtomGroup draw_group = atom3d[current_frame].group_map[0];
-	for (auto map_it = draw_group.atom_map.begin(); map_it != draw_group.atom_map.end(); map_it++) {
-		ofSetColor(3, 168, 158, 230);
-		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
-	}
+	atom3d[current_frame].group_map[0].draw();
 
 	mycam.end();
 }

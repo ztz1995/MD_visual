@@ -5,14 +5,15 @@ void ofApp::setup() {
 
 	for (int i = 0; i < frame_num; i++) {
 		char fp[100];
-		sprintf(fp, "C://OFProjects/MD_visual/data/atom_info_%03d.json", i);
+		//Debug mode: json file path is relative to bin/MD_visual_debug.exe
+		sprintf(fp, "../data/atom_info_%03d.json", i);
 		atom3d[i].load_from_json(string(fp));
 	}
 
 	ofSetFrameRate(60);
 	ofEnableDepthTest();
 	ofBackground(20);
-	mycam.setDistance(atom3d[current_frame].length*2);
+	mycam.setDistance(atom3d[current_frame].length * 2);
 	ofResetElapsedTimeCounter();
 }
 

@@ -28,6 +28,7 @@ void ofApp::update() {
 		neighbor_id.clear();
 		neighbor_id = atom3d[current_frame].get_neighbor_group_id(CENT_ID);
 	}
+
 	last_frame = current_frame;
 }
 

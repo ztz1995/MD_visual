@@ -1,5 +1,5 @@
 #pragma once
-
+//#define DEBUG
 #include "atom_structure.h"
 
 class ofApp : public ofBaseApp {

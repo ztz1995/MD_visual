@@ -1,7 +1,3 @@
-#pragma once
-
-//#define DEBUG
-
 #include "atom_structure.h"
 #include <cmath>
 
@@ -48,8 +44,9 @@ void AtomGroup::draw() {
 		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
 
 #ifdef DEBUG
-		cout << map_it->second.coordinate << endl;
+		cout << "draw atom at: " << map_it->second.coordinate << endl;
 #endif // DEBUG
+	
 	}
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+//#define DEBUG
+
 #include "atom_structure.h"
 #include <cmath>
 
@@ -12,10 +14,11 @@ Atom::Atom(json atm_js, float axis_length) {
 	vector<float> co = atm_js["coordinate"];
 	double f_e = atm_js["f_e"], f_r = atm_js["f_r"], charge = atm_js["charge"];
 	this->id = id;
+	this->mole_id = mole_id;
 	this->group_id = group_id;
 	this->group_type = group_type;
 	this->element = element;
-	this->coordinate = ofVec3f(co[0]-axis_length, co[1] - axis_length, co[2] - axis_length);
+	this->coordinate = ofVec3f(co[0]-axis_length/2, co[1] - axis_length/2, co[2] - axis_length/2);
 	this->f_e = f_e;
 	this->f_r = f_r;
 	this->charge = charge;
@@ -43,8 +46,11 @@ void AtomGroup::draw() {
 	ofSetColor(3, 168, 158, 230);
 	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
 		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
+
+#ifdef DEBUG
+		cout << map_it->second.coordinate << endl;
+#endif // DEBUG
 	}
-	cout << this->get_center() << endl;
 }
 
 void AtomGroup::draw(ofColor color) {
@@ -56,7 +62,9 @@ void AtomGroup::draw(ofColor color) {
 
 ofVec3f AtomGroup::get_center() {
 	if (this->cal_center==FALSE) {
-		cout << "called" << endl;
+#ifdef DEBUG
+		cout << "get center called" << endl;
+#endif // !DEBUG
 		ofVec3f _center = ofVec3f(0., 0., 0.);
 		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
 			_center += map_it->second.coordinate;
@@ -92,6 +100,35 @@ void Atom3D::load_from_json(string fp) {
 			append_atom(new_atom);
 		}
 	}
+}
+
+vector<int> Atom3D::get_neighbor_group_id(const int center_group_id) {
+	AtomGroup c_grp = this->group_map[center_group_id];
+	vector<float> distance;
+	vector<int> arg_vec;
+	for (auto it = this->group_map.begin(); it != this->group_map.end(); it++) {
+		if ((it->first != center_group_id) & (it->second.mole_id != c_grp.mole_id)) {
+			float _d = c_grp.get_center().distance(it->second.get_center());
+			if (_d < 15.) {
+				distance.push_back(_d);
+				arg_vec.push_back(it->first);
+			}
+		}
+	}
+	return _arg_sort(distance, arg_vec);
+}
+
+vector<int> Atom3D::_arg_sort(vector<float> ivec, vector<int> arg_vec) {
+	const int COUNT = ivec.size();
+	for (int i = 1; i < COUNT; i++) {
+		for (int j = 0; j < COUNT - i; j++) {
+			if (ivec[j] > ivec[j + 1]) {
+				swap(ivec[j], ivec[j + 1]);
+				swap(arg_vec[j], arg_vec[j + 1]);
+			}
+		}
+	}
+	return arg_vec;
 }
 
 // Axis implement

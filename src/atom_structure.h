@@ -42,6 +42,9 @@ public:
 	map<int, AtomGroup> group_map;
 	void append_atom(Atom input_atom);
 	void load_from_json(string fp);
+	vector<int> get_neighbor_group_id(const int center_group_id);
+private:
+	vector<int> _arg_sort(vector<float> ivec, vector<int> arg_vec);
 };
 
 class Axis {

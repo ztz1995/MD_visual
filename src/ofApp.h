@@ -24,7 +24,7 @@ public:
 	ofEasyCam mycam;
 	Axis axis;
 	
-	const static int FRAME_NUM = 50;
+	const static int FRAME_NUM = 5;
 	Atom3D atom3d[FRAME_NUM];
 	const static int CENT_ID = 29;    //50 Ph  100 TO
 	const static int NUM_NEIGHBOR = 6;

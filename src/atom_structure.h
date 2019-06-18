@@ -25,13 +25,15 @@ public:
 	int group_id = 0, mole_id = 0;
 	string group_type = "";
 	map<int, Atom> atom_map;
-
 	AtomGroup();
 	AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type);
 	void append_atom(Atom _atom);
 
 	void draw();
 	void draw(ofColor color);
+	bool cal_center = FALSE;
+	ofVec3f center;
+	ofVec3f get_center();
 };
 
 class Atom3D {

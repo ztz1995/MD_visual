@@ -3,31 +3,8 @@
 #include "atom_structure.h"
 #include <cmath>
 
-float cal_vdw(Atom atom1, Atom atom2, float r) {
-	float r_i = atom1.f_r, r_j = atom2.f_r;
-	float f_v = 0.;
-	if (r < 9.5) {
-		float r_ij = pow((pow(r_i, 6) + pow(r_j, 6) / 2), 1 / 6);
-		float f_e = 2*sqrt(atom1.f_e * atom2.f_e) / pow(r_i, 3) / pow(r_j, 3);
-		f_v = 18 * f_e / r_ij * (pow((r_ij / r), 5) - pow((r_ij / r), 8));
-	}
-	return f_v;
-}
-
-float cal_elec(Atom atom1, Atom atom2, float r) {
-	float f_e = 0.;
-	if (r < 9.5) {
-		f_e = atom1.charge * atom2.charge / r / r;
-	}
-	return f_e;
-}
-
-float cal_frc(Atom atom1, Atom atom2) {
-	float r = atom1.coordinate.distance(atom2.coordinate);
-	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
-}
-
-Atom::Atom() {};
+// basic element
+Atom::Atom() {}
 
 Atom::Atom(json atm_js, float axis_length) {
 	int id = atm_js["id"], group_id = atm_js["group_id"], mole_id = atm_js["mole_id"];
@@ -44,12 +21,15 @@ Atom::Atom(json atm_js, float axis_length) {
 	this->charge = charge;
 }
 
-AtomGroup::AtomGroup() {};
+// AtomGroup contains several atoms
+AtomGroup::AtomGroup() {}
+
 AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type) {
 	this->group_id = _group_id;
 	this->mole_id = _mole_id;
 	this->group_type = _group_type;
 }
+
 void AtomGroup::append_atom(Atom _atom) {
 	if (this->atom_map.count(_atom.id)) {
 		throw "Atom already exist!";
@@ -58,12 +38,15 @@ void AtomGroup::append_atom(Atom _atom) {
 		atom_map.insert(make_pair(_atom.id, _atom));
 	}
 }
+
 void AtomGroup::draw() {
 	ofSetColor(3, 168, 158, 230);
 	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
 		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
 	}
+	cout << this->get_center() << endl;
 }
+
 void AtomGroup::draw(ofColor color) {
 	ofSetColor(color);
 	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
@@ -71,6 +54,21 @@ void AtomGroup::draw(ofColor color) {
 	}
 }
 
+ofVec3f AtomGroup::get_center() {
+	if (this->cal_center==FALSE) {
+		cout << "called" << endl;
+		ofVec3f _center = ofVec3f(0., 0., 0.);
+		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+			_center += map_it->second.coordinate;
+		}
+		_center /= this->atom_map.size();
+		this->center = _center;
+		this->cal_center = TRUE;
+	}
+	return this->center;
+}
+
+// Atom3D contains all the atom groups for one frame
 void Atom3D::append_atom(Atom _atom) {
 	if (this->group_map.count(_atom.group_id)) {
 		group_map[_atom.group_id].append_atom(_atom);
@@ -100,6 +98,7 @@ void Atom3D::load_from_json(string fp) {
 Axis::Axis() {
 	length = 300.0;
 }
+
 Axis::Axis(float _l) {
 	length = _l;
 }
@@ -127,9 +126,35 @@ void Axis::draw() {
 		line[i_line].draw();
 	}
 }
+
 void Axis::draw(ofColor color) {
 	ofSetColor(color);
 	for (int i_line = 0; i_line < 12; i_line++) {
 		line[i_line].draw();
 	}
+}
+
+
+float cal_vdw(Atom atom1, Atom atom2, float r) {
+	float r_i = atom1.f_r, r_j = atom2.f_r;
+	float f_v = 0.;
+	if (r < 9.5) {
+		float r_ij = pow((pow(r_i, 6) + pow(r_j, 6) / 2), 1 / 6);
+		float f_e = 2 * sqrt(atom1.f_e * atom2.f_e) / pow(r_i, 3) / pow(r_j, 3);
+		f_v = 18 * f_e / r_ij * (pow((r_ij / r), 10) - pow((r_ij / r), 7));
+	}
+	return f_v;
+}
+
+float cal_elec(Atom atom1, Atom atom2, float r) {
+	float f_e = 0.;
+	if (r < 9.5) {
+		f_e = atom1.charge * atom2.charge / r / r;
+	}
+	return f_e;
+}
+
+float cal_frc(Atom atom1, Atom atom2) {
+	float r = atom1.coordinate.distance(atom2.coordinate);
+	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
 }

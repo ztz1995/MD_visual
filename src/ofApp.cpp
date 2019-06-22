@@ -3,51 +3,51 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+	settings = Settings();
+	settings.setup();
+	model = new AtomModel(&settings);
+	model->setup(5, "data/atom_data/atom_info_");
+	settings.bindEventsToModel(model);
 
-	for (int i = 0; i < FRAME_NUM; i++) {
-		char fp[100];
-		//Debug mode: json file path is relative to bin/MD_visual_debug.exe
-		sprintf(fp, "../data/atom_info_%03d.json", i);
-		atom3d[i].load_from_json(string(fp));
-	}
-
-	ofSetFrameRate(60);
-	ofEnableDepthTest();
-	ofBackground(20);
-	mycam.setDistance(atom3d[current_frame].axis_length * 2);
+	mycam.setDistance(model->getAxisLength() * 2);
 	ofResetElapsedTimeCounter();
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	current_time = ofGetElapsedTimeMicros();
-	current_frame = (current_time / frame_every) % FRAME_NUM;
-	// only update when current frame changed
-	if (current_frame != last_frame) {
-		axis.update(atom3d[current_frame].axis_length);
-		neighbor_id.clear();
-		neighbor_id = atom3d[current_frame].get_neighbor_group_id(CENT_ID);
+	if (settings.gui->getMouseDown()) {
+		mycam.disableMouseInput();
 	}
-	last_frame = current_frame;
+	else {
+		mycam.enableMouseInput();
+	}
+	model->update();
+	settings.update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+	ofBackgroundGradient(ofColor::white, ofColor::gray);
 	mycam.begin();
-
-	axis.draw();
-	// here you will draw your object
-	atom3d[current_frame].group_map[CENT_ID].draw(ofColor(148, 0, 211, 240));
-	for (int i = 0; i < NUM_NEIGHBOR; i++) {
-		atom3d[current_frame].group_map[neighbor_id[i]].draw();
-	}
+	model->draw();
 
 	mycam.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
-
+	if (key == 's') {
+		// WARNING: ofSaveScreen(fp), fp is default relative to data/, not relative to *.exe.
+		string fp = "screenshots/screenshot-" + ofGetTimestampString() + ".png";
+		ofLogNotice() << "take screenshot: " << fp;
+		ofSleepMillis(1000);
+		ofSaveScreen(fp);
+	}
+	else if (key == ' ') {
+		ofLogNotice() << "reset camera.";
+		mycam.reset();
+	}
 }
 
 //--------------------------------------------------------------

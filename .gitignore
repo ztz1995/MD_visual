@@ -1,4 +1,8 @@
-bin
+bin/*.*
+bin/data/screenshots/
+!bin/data/atom_data/
+!bin/data/ofxbraitsch/
+
 obj
 MD_visual*
 addons.make
@@ -92,7 +96,7 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+# [Bb]in/
 [Oo]bj/
 [Ll]og/
 

@@ -1,6 +1,8 @@
 #pragma once
-
+//#define DEBUG
 #include "atom_structure.h"
+#include "settings.h"
+#include "atom_model.h"
 
 class ofApp : public ofBaseApp {
 
@@ -23,15 +25,9 @@ public:
 
 	ofEasyCam mycam;
 	Axis axis;
-	
-	const static int FRAME_NUM = 5;
-	Atom3D atom3d[FRAME_NUM];
-	const static int CENT_ID = 29;    //50 Ph  100 TO
-	const static int NUM_NEIGHBOR = 6;
-	vector<int> neighbor_id;
 
-	uint64_t current_time;
-	int frame_every = 500000;
-	int current_frame=0, last_frame=-1;
+	Settings settings;
+	AtomModel* model;
+
 
 };

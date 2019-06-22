@@ -4,17 +4,17 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include "ofMain.h"
 #include "json.hpp"
+#include "ofMain.h"
 
 using namespace std;
 using namespace nlohmann;
 
 class Atom {
 public:
-	int id=0, group_id=0, mole_id=0;
-	string group_type="", element="";
-	double f_e=0., f_r=0., charge=0.;
+	int id = 0, group_id = 0, mole_id = 0;
+	string group_type = "", element = "";
+	double f_e = 0., f_r = 0., charge = 0.;
 	ofVec3f coordinate = ofVec3f(0., 0., 0.);
 	Atom();
 	Atom::Atom(json atm_js, float axis_length);
@@ -29,15 +29,18 @@ public:
 	AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type);
 	void append_atom(Atom _atom);
 
-	void draw();
-	void draw(ofColor color);
+	void draw(ofColor color = ofColor(3, 168, 158, 240));
 	bool cal_center = FALSE;
 	ofVec3f center;
 	ofVec3f get_center();
+private:
+
 };
 
 class Atom3D {
 public:
+	Atom3D();
+	Atom3D(string fp);
 	float axis_length = 0.;
 	map<int, AtomGroup> group_map;
 	void append_atom(Atom input_atom);

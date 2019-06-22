@@ -18,12 +18,11 @@ Atom::Atom(json atm_js, float axis_length) {
 	this->group_id = group_id;
 	this->group_type = group_type;
 	this->element = element;
-	this->coordinate = ofVec3f(co[0]-axis_length/2, co[1] - axis_length/2, co[2] - axis_length/2);
+	this->coordinate = ofVec3f(co[0] - axis_length / 2, co[1] - axis_length / 2, co[2] - axis_length / 2);
 	this->f_e = f_e;
 	this->f_r = f_r;
 	this->charge = charge;
 }
-
 // AtomGroup contains several atoms
 AtomGroup::AtomGroup() {}
 
@@ -42,16 +41,6 @@ void AtomGroup::append_atom(Atom _atom) {
 	}
 }
 
-void AtomGroup::draw() {
-	ofSetColor(3, 168, 158, 230);
-	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
-
-#ifdef DEBUG
-		cout << map_it->second.coordinate << endl;
-#endif // DEBUG
-	}
-}
 
 void AtomGroup::draw(ofColor color) {
 	ofSetColor(color);
@@ -61,7 +50,7 @@ void AtomGroup::draw(ofColor color) {
 }
 
 ofVec3f AtomGroup::get_center() {
-	if (this->cal_center==FALSE) {
+	if (this->cal_center == FALSE) {
 #ifdef DEBUG
 		cout << "get center called" << endl;
 #endif // !DEBUG
@@ -76,6 +65,15 @@ ofVec3f AtomGroup::get_center() {
 	return this->center;
 }
 
+Atom3D::Atom3D()
+{
+}
+
+Atom3D::Atom3D(string fp)
+{
+	load_from_json(fp);
+}
+
 // Atom3D contains all the atom groups for one frame
 void Atom3D::append_atom(Atom _atom) {
 	if (this->group_map.count(_atom.group_id)) {
@@ -88,10 +86,18 @@ void Atom3D::append_atom(Atom _atom) {
 	}
 }
 
+
 void Atom3D::load_from_json(string fp) {
-	ifstream in_file(fp);
 	json atom_info;
-	in_file >> atom_info;
+	if (!std::filesystem::exists(fp)) {
+		ofLogNotice() << "file not exist: " << fp;
+		throw fp;
+	}
+	else {
+		ifstream in_file(fp);
+		in_file >> atom_info;
+		ofLogNotice() << "file loaded: " << fp;
+	}
 	this->axis_length = atom_info["length"];
 	for (json::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
 		if (it.key() != "length") {
@@ -115,6 +121,7 @@ vector<int> Atom3D::get_neighbor_group_id(const int center_group_id) {
 			}
 		}
 	}
+	//cout << "in get_neigh...: distance.size=" << distance.size() << endl;
 	return _arg_sort(distance, arg_vec);
 }
 
@@ -158,7 +165,7 @@ void Axis::update(float _l) {
 }
 
 void Axis::draw() {
-	ofSetColor(200);
+	ofSetColor(0);
 	for (int i_line = 0; i_line < 12; i_line++) {
 		line[i_line].draw();
 	}

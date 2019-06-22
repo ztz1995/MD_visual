@@ -11,7 +11,6 @@ void ofApp::setup() {
 
 	mycam.setDistance(model->getAxisLength() * 2);
 	ofResetElapsedTimeCounter();
-
 }
 
 //--------------------------------------------------------------

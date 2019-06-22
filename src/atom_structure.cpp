@@ -23,6 +23,7 @@ Atom::Atom(json atm_js, float axis_length) {
 	this->f_r = f_r;
 	this->charge = charge;
 }
+
 // AtomGroup contains several atoms
 AtomGroup::AtomGroup() {}
 
@@ -47,6 +48,9 @@ void AtomGroup::draw(ofColor color) {
 	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
 		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
 	}
+#ifdef DEBUG
+		cout << "draw atom at: " << map_it->second.coordinate << endl;
+#endif // DEBUG
 }
 
 ofVec3f AtomGroup::get_center() {
@@ -86,7 +90,6 @@ void Atom3D::append_atom(Atom _atom) {
 	}
 }
 
-
 void Atom3D::load_from_json(string fp) {
 	json atom_info;
 	if (!std::filesystem::exists(fp)) {
@@ -121,7 +124,6 @@ vector<int> Atom3D::get_neighbor_group_id(const int center_group_id) {
 			}
 		}
 	}
-	//cout << "in get_neigh...: distance.size=" << distance.size() << endl;
 	return _arg_sort(distance, arg_vec);
 }
 

@@ -4,7 +4,6 @@ bin/data/screenshots/
 !bin/data/ofxbraitsch/
 
 obj
-MD_visual*
 addons.make
 
 .idea/*

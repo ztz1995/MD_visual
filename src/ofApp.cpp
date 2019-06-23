@@ -27,11 +27,13 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+	ofEnableDepthTest();
 	ofBackgroundGradient(ofColor::white, ofColor::gray);
 	mycam.begin();
 	model->draw();
 
 	mycam.end();
+	ofDisableDepthTest();
 }
 
 //--------------------------------------------------------------

@@ -43,13 +43,13 @@ void AtomModel::loadData(int frames, string prefix)
 			else {
 				// different path, update new Atom3D
 				model_frames[i] = Atom3D(filepath);
-				frames_neighbor_id[i] = model_frames[i].get_neighbor_group_id(CENT_ID);
+				frames_neighbor_id[i] = model_frames[i].get_neighbor_group_id(CENT_ID, 100);
 			}
 		}
 		else {
 			// append the larger index items
 			model_frames.push_back(Atom3D(filepath));
-			frames_neighbor_id.push_back(model_frames[i].get_neighbor_group_id(CENT_ID));
+			frames_neighbor_id.push_back(model_frames[i].get_neighbor_group_id(CENT_ID, 100));
 		}
 	}
 	frame_num = frames;

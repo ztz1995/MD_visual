@@ -49,7 +49,7 @@ void AtomGroup::draw(ofColor color) {
 		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
 	}
 #ifdef DEBUG
-		cout << "draw atom at: " << map_it->second.coordinate << endl;
+	cout << "draw atom at: " << map_it->second.coordinate << endl;
 #endif // DEBUG
 }
 
@@ -99,7 +99,7 @@ void Atom3D::load_from_json(string fp) {
 	else {
 		ifstream in_file(fp);
 		in_file >> atom_info;
-		ofLogNotice() << "file loaded: " << fp;
+		//ofLogNotice() << "file loaded: " << fp;
 	}
 	this->axis_length = atom_info["length"];
 	for (json::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
@@ -111,14 +111,14 @@ void Atom3D::load_from_json(string fp) {
 	}
 }
 
-vector<int> Atom3D::get_neighbor_group_id(const int center_group_id) {
+vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r) {
 	AtomGroup c_grp = this->group_map[center_group_id];
 	vector<float> distance;
 	vector<int> arg_vec;
 	for (auto it = this->group_map.begin(); it != this->group_map.end(); it++) {
 		if ((it->first != center_group_id) & (it->second.mole_id != c_grp.mole_id)) {
 			float _d = c_grp.get_center().distance(it->second.get_center());
-			if (_d < 15.) {
+			if (_d < r) {
 				distance.push_back(_d);
 				arg_vec.push_back(it->first);
 			}

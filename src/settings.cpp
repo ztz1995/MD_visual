@@ -22,13 +22,15 @@ void Settings::setup() {
 	stopButton = actions->addButton(" ** Stop");
 	actions->expand();
 	gui->addBreak();
-	//model settings
-	modelFolder = gui->addFolder("Model Settings");
-	modelRealFRM = modelFolder->addTextInput("Real FR", "0");
-	modelRealFRM->setEnabled(false);
-	modelFrameRateSlider = modelFolder->addSlider("Model FR", 1, 120, 60);
+	//model settings£º FR, opacity, color, neighbor_num, cent_id
+	modelFolder = gui->addFolder("Model Settings",ofColor::green);
+	modelNeighborSlider = modelFolder->addSlider("Neighbor num", 0, 20, 8);
+	modelNeighborSlider->setPrecision(0);
+	modelCentIdInput = modelFolder->addTextInput("Center id", "29");
+	modelCentIdInput->setInputType(ofxDatGuiInputType::NUMERIC);
+	modelFrameRateSlider = modelFolder->addSlider("Model FR", 1, 25, 15);
 	modelFrameRateSlider->setPrecision(0);
-	modelOpacitySlider = modelFolder->addSlider("Opacity", 0, 255, 60);
+	modelOpacitySlider = modelFolder->addSlider("Opacity", 0, 255, 200);
 	modelOpacitySlider->setPrecision(0);
 	modelColorPicker = modelFolder->addColorPicker("Primary Color", ofColor(3, 168, 158));
 	dissolvedToggle = modelFolder->addToggle("Fully Dissolved");
@@ -44,14 +46,14 @@ void Settings::setup() {
 	appFRSetter->onSliderEvent(this, &Settings::onSliderEvent);
 	opacitySlider = infoBoard->addSlider("Panel opacity", 0, 1, 1);
 	opacitySlider->onSliderEvent(this, &Settings::onSliderEvent);
-	highResToggle = infoBoard->addToggle("High Resolution");
-	highResToggle->onToggleEvent(this, &Settings::onHighResToggle);
-
+	scaleInput = infoBoard->addTextInput("Panel Scale", "1.2");
+	scaleInput->setInputType(ofxDatGuiInputType::NUMERIC);
+	scaleInput->onTextInputEvent(this, &Settings::onTextInputEvent);
+	
 	infoBoard->expand();
 }
 void Settings::update() {
-	float real_fr = min(modelFrameRateSlider->getValue(), ofGetFrameRate());
-	modelRealFRM->setText(ofToString(real_fr, 2));
+	
 }
 
 void Settings::bindEventsToModel(AtomModel* model)
@@ -63,6 +65,7 @@ void Settings::bindEventsToModel(AtomModel* model)
 	stopButton->onButtonEvent(model, &AtomModel::onStopButton);
 
 	dissolvedToggle->onToggleEvent(model, &AtomModel::onDissolvedToggle);
+	//modelNeighborSlider->onSliderEvent()
 	modelFrameRateSlider->onSliderEvent(model, &AtomModel::onFrameRateSlider);
 	modelOpacitySlider->onSliderEvent(model, &AtomModel::onOpacitySlider);
 	modelColorPicker->onColorPickerEvent(model, &AtomModel::onColorPicker);
@@ -84,8 +87,17 @@ void Settings::onSliderEvent(ofxDatGuiSliderEvent e)
 
 }
 
-void Settings::onHighResToggle(ofxDatGuiToggleEvent e)
+void Settings::onTextInputEvent(ofxDatGuiTextInputEvent e)
 {
-	theme->toggleHighRes(e.target->getChecked());
-	gui->setTheme(theme, true);
+	if (e.target == scaleInput) {
+		string s = e.target->getText();
+		if (s == "") {
+			s = "1.3";
+		}
+		float scale = atof(s.c_str());
+		if (scale > 0.5 && scale < 3) {
+			theme->setScale(scale);
+			gui->setTheme(theme, true);
+		}
+	}
 }

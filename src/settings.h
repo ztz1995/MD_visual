@@ -22,85 +22,60 @@ public:
 	ofxDatGuiButton* stopButton;
 	//dissolve toggle
 	ofxDatGuiToggle* dissolvedToggle;
+	ofxDatGuiSlider* modelNeighborSlider;
+	ofxDatGuiTextInput* modelCentIdInput;
 	//model frame rate
 	ofxDatGuiSlider* modelFrameRateSlider;
 	//model color&opacity
 	ofxDatGuiSlider* modelOpacitySlider;
 	ofxDatGuiColorPicker* modelColorPicker;
+	/*end model setting items*/
 private:
-	// for AtomModel
-	ofxDatGuiTextInput* modelRealFRM;
-	//frame rate setter
+	//shared event handler
 	void onSliderEvent(ofxDatGuiSliderEvent e);
+	void onTextInputEvent(ofxDatGuiTextInputEvent e);
 	//for settings panel
 	ofxDatGuiFolder* infoBoard;
 	ofxDatGuiSlider* appFRSetter;
 	ofxDatGuiSlider* opacitySlider;
-	ofxDatGuiToggle* highResToggle;
-	void onHighResToggle(ofxDatGuiToggleEvent e);
+	ofxDatGuiTextInput* scaleInput;
 };
 
 
 class PanelTheme :public ofxDatGuiThemeSmoke {
 public:
-	PanelTheme() {
+	PanelTheme(float scale=1.2) {
 		_theme = ofxDatGuiThemeSmoke();
-		_isHighResolution = ofxDatGuiIsHighResolution();
+		_scale=scale;
 	}
-	void toggleHighRes(bool isHighRes) {
-		if (isHighRes == _isHighResolution) {
+	void setScale(float scale) {
+		if (scale == _scale) {
 			return;
 		}
-		_isHighResolution = isHighRes;
-		if (isHighRes) {
-			cout << "set HighResolution mode" << endl;
-			float scale = 1.3f;
-			font.size = _theme.font.size * 1.5;
-			stripe.width = _theme.stripe.width * scale;
-			layout.width = _theme.layout.width * scale;
-			layout.height = _theme.layout.height * scale;
-			layout.padding = _theme.layout.padding * scale;
-			layout.vMargin = _theme.layout.vMargin * scale;
-			layout.iconSize = _theme.layout.iconSize * scale;
-			layout.labelWidth = _theme.layout.labelWidth * scale;
-			layout.labelMargin = _theme.layout.labelMargin * scale;
-			layout.graph.height = _theme.layout.graph.height * scale;
-			layout.pad2d.height = _theme.layout.pad2d.height * scale;
-			layout.pad2d.ballSize = _theme.layout.pad2d.ballSize * scale;
-			layout.pad2d.lineWeight = _theme.layout.pad2d.lineWeight * scale;
-			layout.matrix.height = _theme.layout.matrix.height * scale;
-			layout.matrix.buttonSize = _theme.layout.matrix.buttonSize * scale;
-			layout.matrix.buttonPadding = _theme.layout.matrix.buttonPadding * scale;
-			layout.colorPicker.rainbowWidth = _theme.layout.colorPicker.rainbowWidth * scale;
-			layout.textInput.highlightPadding = _theme.layout.textInput.highlightPadding * scale;
+		cout << "set panel scale: " << endl;
+		font.size = _theme.font.size * scale * 1.2;
+		stripe.width = _theme.stripe.width * scale;
+		layout.width = _theme.layout.width * scale;
+		layout.height = _theme.layout.height * scale;
+		layout.padding = _theme.layout.padding * scale;
+		layout.vMargin = _theme.layout.vMargin * scale;
+		layout.iconSize = _theme.layout.iconSize * scale;
+		layout.labelWidth = _theme.layout.labelWidth * scale;
+		layout.labelMargin = _theme.layout.labelMargin * scale;
+		layout.graph.height = _theme.layout.graph.height * scale;
+		layout.pad2d.height = _theme.layout.pad2d.height * scale;
+		layout.pad2d.ballSize = _theme.layout.pad2d.ballSize * scale;
+		layout.pad2d.lineWeight = _theme.layout.pad2d.lineWeight * scale;
+		layout.matrix.height = _theme.layout.matrix.height * scale;
+		layout.matrix.buttonSize = _theme.layout.matrix.buttonSize * scale;
+		layout.matrix.buttonPadding = _theme.layout.matrix.buttonPadding * scale;
+		layout.colorPicker.rainbowWidth = _theme.layout.colorPicker.rainbowWidth * scale;
+		layout.textInput.highlightPadding = _theme.layout.textInput.highlightPadding * scale;
 
-		}
-		else {
-			cout << "exit HighResolution mode" << endl;
-
-			font.size = _theme.font.size;
-			stripe.width = _theme.layout.width;
-			layout.width = _theme.layout.width;
-			layout.height = _theme.layout.height;
-			layout.padding = _theme.layout.padding;
-			layout.vMargin = _theme.layout.vMargin;
-			layout.iconSize = _theme.layout.iconSize;
-			layout.labelWidth = _theme.layout.labelWidth;
-			layout.labelMargin = _theme.layout.labelMargin;
-			layout.graph.height = _theme.layout.graph.height;
-			layout.pad2d.height = _theme.layout.pad2d.height;
-			layout.pad2d.ballSize = _theme.layout.pad2d.ballSize;
-			layout.pad2d.lineWeight = _theme.layout.pad2d.lineWeight;
-			layout.matrix.height = _theme.layout.matrix.height;
-			layout.matrix.buttonSize = _theme.layout.matrix.buttonSize;
-			layout.matrix.buttonPadding = _theme.layout.matrix.buttonPadding;
-			layout.colorPicker.rainbowWidth = _theme.layout.colorPicker.rainbowWidth;
-			layout.textInput.highlightPadding = _theme.layout.textInput.highlightPadding;
-		}
 		font.ptr = ofxSmartFont::add(font.file, font.size);
 	}
 private:
 	// default theme
 	ofxDatGuiThemeSmoke _theme;
-	bool _isHighResolution;
+	float _scale;
 };

@@ -195,7 +195,6 @@
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\atom_model.h" />
     <ClInclude Include="src\atom_structure.h" />
-    <ClInclude Include="src\json.hpp" />
     <ClInclude Include="src\settings.h" />
     <ClInclude Include="..\..\addons\ofxDatGui\src\components\ofxDatGui2dPad.h" />
     <ClInclude Include="..\..\addons\ofxDatGui\src\components\ofxDatGuiButton.h" />

@@ -45,7 +45,7 @@ void AtomGroup::append_atom(Atom _atom) {
 
 void AtomGroup::update() {
 	if (!cal_iso) {
-		ofVec3f max_co = {0.,0.,0.};
+		ofVec3f max_co = { 0.,0.,0. };
 		ofVec3f dif = { 0.,0.,0. };
 		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
 			dif = map_it->second.coordinate - get_center();
@@ -58,9 +58,11 @@ void AtomGroup::update() {
 		iso_scale = max_co * 2;
 		vector<ofPoint> centers;
 		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-			centers.push_back((map_it->second.coordinate - get_center()+max_co)/iso_scale);
+			centers.push_back((map_it->second.coordinate - get_center() + max_co) / iso_scale);
 			//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
 		}
+		//为什么把setup放在update里？？？
+		//即使用cal_iso判断了，也不应该把new的部分放在里面
 		iso.setup(64);
 		this->iso.setCenters(centers);
 		this->iso.setRadius(1. / 16., 2. / 16.);
@@ -70,6 +72,13 @@ void AtomGroup::update() {
 };
 
 void AtomGroup::draw(ofColor color) {
+	float rand_max = 100;
+	ofSeedRandom(group_id);
+	//rand_max should limit to: rand_max<255
+	color.r = color.r + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5);
+	color.g = color.g + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5);
+	color.b = color.b + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5);
+
 	ofPushMatrix();
 	ofTranslate(get_center());
 	ofScale(iso_scale);
@@ -79,7 +88,7 @@ void AtomGroup::draw(ofColor color) {
 	//	ofDrawIcoSphere(map_it->second.coordinate, 1);
 	//}
 
-	
+
 #ifdef DEBUG
 	cout << "draw atom at: " << map_it->second.coordinate << endl;
 #endif // DEBUG
@@ -116,6 +125,7 @@ void Atom3D::append_atom(Atom _atom) {
 		group_map[_atom.group_id].append_atom(_atom);
 	}
 	else {
+		//ofLogNotice() << "new atom group id=" << _atom.group_id;
 		AtomGroup new_group(_atom.group_id, _atom.mole_id, _atom.group_type);
 		new_group.append_atom(_atom);
 		group_map.insert(make_pair(_atom.group_id, new_group));
@@ -148,7 +158,7 @@ vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r) {
 	vector<float> distance;
 	vector<int> arg_vec;
 	for (auto it = this->group_map.begin(); it != this->group_map.end(); it++) {
-		if ((it->first != center_group_id) & (it->second.mole_id != c_grp.mole_id)) {
+		if ((it->first != center_group_id) && (it->second.mole_id != c_grp.mole_id)) {
 			float _d = c_grp.get_center().distance(it->second.get_center());
 			if (_d < r) {
 				distance.push_back(_d);

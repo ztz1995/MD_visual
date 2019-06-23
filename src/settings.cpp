@@ -13,8 +13,8 @@ void Settings::setup() {
 	gui->addFooter();
 	gui->getFooter()->setLabelWhenExpanded("Setting Panel - CLOSE");
 	gui->getFooter()->setLabelWhenCollapsed("Setting Panel - COLLAPSE");
-	theme = new PanelTheme();
-	gui->setTheme(theme);
+	theme = new PanelTheme(1.3);
+	gui->setTheme(theme, true);
 	// play controls
 	actions = gui->addFolder("Actions", ofColor::blue);
 	playButton = actions->addButton(" ** Play");
@@ -23,17 +23,21 @@ void Settings::setup() {
 	actions->expand();
 	gui->addBreak();
 	//model settings:: FR, opacity, color, neighbor_num, cent_id
-	modelFolder = gui->addFolder("Model Settings",ofColor::green);
-	modelNeighborSlider = modelFolder->addSlider("Neighbor num", 0, 20, 8);
-	modelNeighborSlider->setPrecision(0);
-	modelCentIdInput = modelFolder->addTextInput("Center id", "29");
-	modelCentIdInput->setInputType(ofxDatGuiInputType::NUMERIC);
+	modelFolder = gui->addFolder("Model Settings", ofColor::green);
+	modelFrameNumSlider = modelFolder->addSlider("Frames", 1, 20, 5);
+	modelFrameNumSlider->setPrecision(0);
+	modelNeighborNumSlider = modelFolder->addSlider("Neighbor num", 0, 20, 8);
+	modelNeighborNumSlider->setPrecision(0);
+	modelCentIdSlider = modelFolder->addSlider("Center id", 0, 250, 29);
+	modelCentIdSlider->setPrecision(0);
+	modelRadiusSlider = modelFolder->addSlider("Radius", 0, 100, 50);
+	modelRadiusSlider->setPrecision(1);
 	modelFrameRateSlider = modelFolder->addSlider("Model FR", 1, 25, 15);
 	modelFrameRateSlider->setPrecision(0);
 	modelOpacitySlider = modelFolder->addSlider("Opacity", 0, 255, 200);
 	modelOpacitySlider->setPrecision(0);
 	modelColorPicker = modelFolder->addColorPicker("Primary Color", ofColor(3, 168, 158));
-	dissolvedToggle = modelFolder->addToggle("Fully Dissolved");
+	modelDissolvedToggle = modelFolder->addToggle("Fully Dissolved");
 	modelFolder->expand();
 	gui->addBreak();
 
@@ -50,7 +54,8 @@ void Settings::setup() {
 	scaleInput->setInputType(ofxDatGuiInputType::NUMERIC);
 	scaleInput->onTextInputEvent(this, &Settings::onTextInputEvent);
 
-	infoBoard->expand();
+	//infoBoard->expand();
+
 }
 void Settings::update() {
 
@@ -64,11 +69,17 @@ void Settings::bindEventsToModel(AtomModel* model)
 	pauseButton->onButtonEvent(model, &AtomModel::onPauseButton);
 	stopButton->onButtonEvent(model, &AtomModel::onStopButton);
 
-	dissolvedToggle->onToggleEvent(model, &AtomModel::onDissolvedToggle);
-	//modelNeighborSlider->onSliderEvent()
+	modelDissolvedToggle->onToggleEvent(model, &AtomModel::onDissolvedToggle);
+	modelFrameNumSlider->onSliderEvent(model, &AtomModel::onFrameNumSlider);
+	modelNeighborNumSlider->onSliderEvent(model, &AtomModel::onNeighborNumSlider);
+	modelCentIdSlider->onSliderEvent(model, &AtomModel::onCenterIdSlider);
+	modelRadiusSlider->onSliderEvent(model, &AtomModel::onNeighborRadiusSlider);
 	modelFrameRateSlider->onSliderEvent(model, &AtomModel::onFrameRateSlider);
 	modelOpacitySlider->onSliderEvent(model, &AtomModel::onOpacitySlider);
 	modelColorPicker->onColorPickerEvent(model, &AtomModel::onColorPicker);
+
+	//update panel like slider max value
+	modelFrameNumSlider->setMax(model->max_frame_num);
 }
 
 

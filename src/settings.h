@@ -21,9 +21,9 @@ public:
 	ofxDatGuiButton* pauseButton;
 	ofxDatGuiButton* stopButton;
 	//dissolve toggle
-	ofxDatGuiToggle* dissolvedToggle;
-	ofxDatGuiSlider* modelNeighborSlider;
-	ofxDatGuiTextInput* modelCentIdInput;
+	ofxDatGuiToggle* modelDissolvedToggle;
+	ofxDatGuiSlider* modelFrameNumSlider, * modelNeighborNumSlider, * modelCentIdSlider, * modelRadiusSlider;
+
 	//model frame rate
 	ofxDatGuiSlider* modelFrameRateSlider;
 	//model color&opacity
@@ -44,15 +44,15 @@ private:
 
 class PanelTheme :public ofxDatGuiThemeSmoke {
 public:
-	PanelTheme(float scale=1.2) {
+	PanelTheme(float scale = 1.3) {
 		_theme = ofxDatGuiThemeSmoke();
-		_scale=scale;
+		_scale = scale;
 	}
 	void setScale(float scale) {
 		if (scale == _scale) {
 			return;
 		}
-		cout << "set panel scale: " << endl;
+		ofLogNotice() << "set panel scale: ";
 		font.size = _theme.font.size * scale * 1.2;
 		stripe.width = _theme.stripe.width * scale;
 		layout.width = _theme.layout.width * scale;

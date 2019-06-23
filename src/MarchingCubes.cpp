@@ -5,7 +5,7 @@ float fLevel = .5;
 void MarchingCubes::BuildTables()
 {
 	// Build CubeNeighbors table
-	
+
 	// Cube neighbors
 	//
 	// bit 0 : x + 1
@@ -14,17 +14,17 @@ void MarchingCubes::BuildTables()
 	// bit 3 : y - 1
 	// bit 4 : z + 1
 	// bit 5 : z - 1
-	
-	for( int i = 0; i < 256; i++ )
+
+	for (int i = 0; i < 256; i++)
 	{
 		int c = 0;
-		if(	(i & 0x66) != 0 && (i & 0x66) != 0x66 ) c |= (1<<0);
-		if(	(i & 0x99) != 0 && (i & 0x99) != 0x99 ) c |= (1<<1);
-		if(	(i & 0xF0) != 0 && (i & 0xF0) != 0xF0 ) c |= (1<<2);
-		if(	(i & 0x0F) != 0 && (i & 0x0F) != 0x0F ) c |= (1<<3);
-		if(	(i & 0xCC) != 0 && (i & 0xCC) != 0xCC ) c |= (1<<4);
-		if(	(i & 0x33) != 0 && (i & 0x33) != 0x33 ) c |= (1<<5);
-		
+		if ((i & 0x66) != 0 && (i & 0x66) != 0x66) c |= (1 << 0);
+		if ((i & 0x99) != 0 && (i & 0x99) != 0x99) c |= (1 << 1);
+		if ((i & 0xF0) != 0 && (i & 0xF0) != 0xF0) c |= (1 << 2);
+		if ((i & 0x0F) != 0 && (i & 0x0F) != 0x0F) c |= (1 << 3);
+		if ((i & 0xCC) != 0 && (i & 0xCC) != 0xCC) c |= (1 << 4);
+		if ((i & 0x33) != 0 && (i & 0x33) != 0x33) c |= (1 << 5);
+
 		m_CubeNeighbors[i] = c;
 	}
 }
@@ -58,7 +58,7 @@ void MarchingCubes::BuildTables()
 //           0           
 
 // Cube vertices
-float MarchingCubes::m_CubeVertices[8][3] = 
+float MarchingCubes::m_CubeVertices[8][3] =
 {
 	{0,0,0},
 	{1,0,0},
@@ -72,7 +72,7 @@ float MarchingCubes::m_CubeVertices[8][3] =
 
 // This is the edges and the direction on them. They are designed so
 // that edges of neighboring cubes are in the same direction.
-char MarchingCubes::m_CubeEdges[12][2] = 
+char MarchingCubes::m_CubeEdges[12][2] =
 {
 	{0,1}, {1,2}, {3,2}, {0,3},
 	{4,5}, {5,6}, {7,6}, {4,7},
@@ -80,8 +80,8 @@ char MarchingCubes::m_CubeEdges[12][2] =
 };
 
 // This list gives the edges that the triangles in each case intersect.
-char MarchingCubes::m_CubeTriangles[256][16] = 
-{ 
+char MarchingCubes::m_CubeTriangles[256][16] =
+{
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // 0  
 	{ 3,  0,  8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // 1  
 	{ 9,  0,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, // 2  
@@ -343,64 +343,107 @@ char MarchingCubes::m_CubeTriangles[256][16] =
 char MarchingCubes::m_CubeNeighbors[256];
 bool MarchingCubes::tablesBuilt = false;
 
-MarchingCubes::MarchingCubes ()
-{	
+MarchingCubes::MarchingCubes()
+{
 	m_nGridSize = 0;
 	m_nGridSizep1 = 0;
-	
+
 	m_nMaxOpenVoxels = 32;
-	m_pOpenVoxels    = new int[m_nMaxOpenVoxels*3];
-	
-	m_nNumOpenVoxels    = 0;
-	m_pfGridEnergy      = 0;
+	m_pOpenVoxels = new int[m_nMaxOpenVoxels * 3];
+
+	m_nNumOpenVoxels = 0;
+	m_pfGridEnergy = 0;
 	m_pnGridPointStatus = 0;
 	m_pnGridVoxelStatus = 0;
-	
+
 	m_nNumVertices = 0;
-	m_nNumIndices  = 0;
-	m_pVertices    = 0;
-	m_pIndices     = 0;
-	
-	if(!tablesBuilt) {
+	m_nNumIndices = 0;
+	m_pVertices = NULL;//指针赋初值请用NULL
+	m_pIndices = 0;
+
+	if (!tablesBuilt) {
 		BuildTables();
 		tablesBuilt = true;
 	}
 }
 
+MarchingCubes::~MarchingCubes()
+{
+	//center_id改变时，AtomGroup析构->MarchingCubes析构，不释放会gg的
+	/*
+	[notice ] ~MarchingCubes: m_pOpe...=0CFE53A8
+	[notice ] after ~MarchingCubes: m_pOpe...=00000000
+	[notice ] ~MarchingCubes: m_pOpe...=0CFE53A8
+	HEAP[MD_visual_debug.exe]: Invalid address specified to RtlValidateHeap( 01050000, 0CFE5388 )
+	MD_visual_debug.exe has triggered a breakpoint.
+	*/
+	cout << "MarchingCubes destructor not finished!" << endl;
+	return;
+	if (m_pOpenVoxels != NULL) {
+		ofLogNotice() << "~MarchingCubes: m_pOpe...=" << m_pOpenVoxels;
+		delete[] m_pOpenVoxels;
+		m_pOpenVoxels = NULL;
+		ofLogNotice() << "after ~MarchingCubes: m_pOpe...=" << m_pOpenVoxels;
+	}
+	if (m_pfGridEnergy != NULL) {
+		delete[] m_pfGridEnergy;
+		m_pfGridEnergy = NULL;
+	}
+	if (m_pnGridPointStatus != NULL) {
+		delete[] m_pnGridPointStatus;
+		m_pnGridPointStatus = NULL;
+	}
+	if (m_pnGridVoxelStatus != NULL) {
+		delete[] m_pnGridVoxelStatus;
+		m_pnGridVoxelStatus = NULL;
+	}
+	if (m_pVertices != NULL) {
+		delete[] m_pVertices;
+		m_pVertices = NULL;
+	}
+	if (m_pIndices != NULL) {
+		delete[] m_pIndices;
+		m_pIndices = NULL;
+	}
+}
+
 void MarchingCubes::setup(int resolution)
 {
-	m_fVoxelSize = 2.0/float(resolution);
-	m_nGridSize   = resolution;
-	m_nGridSizep1 = m_nGridSize+1;
-	
-	if(minRadius == 0 && maxRadius == 0) {
+	int _test_null = 0;
+	m_fVoxelSize = 2.0 / float(resolution);
+	m_nGridSize = resolution;
+	m_nGridSizep1 = m_nGridSize + 1;
+
+	if (minRadius == 0 && maxRadius == 0) {
 		setRadius(1. / resolution, 3. / resolution);
 	}
-	
-	m_pfGridEnergy      = new float[(resolution+1)*(resolution+1)*(resolution+1)];
-	m_pnGridPointStatus = new char [(resolution+1)*(resolution+1)*(resolution+1)];
-	m_pnGridVoxelStatus = new char [ resolution*    resolution*    resolution];
-	
+	m_pfGridEnergy = new float[(resolution + 1) * (resolution + 1) * (resolution + 1)];
+	m_pnGridPointStatus = new char[(resolution + 1) * (resolution + 1) * (resolution + 1)];
+	m_pnGridVoxelStatus = new char[resolution * resolution * resolution];
+
 	m_nMaxNumVertices = MAX_VERTICES;
-	m_nMaxNumIndices  = MAX_INDICES;
-	
+	m_nMaxNumIndices = MAX_INDICES;
+
+	//Unhandled exception at 0x765233D2 in MD_visual_debug.exe: Microsoft C++ exception: std::bad_alloc at memory location 0x0019FA8C. occurred
+	//40个group左右内存就会爆掉2G，整个app仍有少量内存泄漏
+	//成员变量分配内存在setup,更新成员变量数据在update或者自己写一个
 	m_pVertices = new SVertex[m_nMaxNumVertices];
-	for (int i=0; i<m_nMaxNumVertices; i++){
-		for (int j=0; j<3; j++){
+	for (int i = 0; i < m_nMaxNumVertices; i++) {
+		for (int j = 0; j < 3; j++) {
 			m_pVertices[i].v[j] = 0;
 			m_pVertices[i].n[j] = 0;
 		}
 	}
-	
+
 	m_pIndices = new unsigned short[m_nMaxNumIndices];
-	for (int i=0; i<m_nMaxNumIndices; i++){
+	for (int i = 0; i < m_nMaxNumIndices; i++) {
 		m_pIndices[i] = 0;
 	}
 }
 
-void MarchingCubes::setCenters(const vector<ofVec3f>& centers){
+void MarchingCubes::setCenters(const vector<ofVec3f>& centers) {
 	m_Balls.clear();
-	for(int i = 0; i < centers.size(); i++) {
+	for (int i = 0; i < centers.size(); i++) {
 		m_Balls.push_back(SBall());
 		m_Balls.back().p = centers[i] * 2 - 1;
 		m_Balls.back().m = 1;
@@ -408,7 +451,7 @@ void MarchingCubes::setCenters(const vector<ofVec3f>& centers){
 }
 
 void MarchingCubes::setMasses(const vector<float>& masses) {
-	for(int i = 0; i < masses.size(); i++) {
+	for (int i = 0; i < masses.size(); i++) {
 		m_Balls[i].m = masses[i];
 	}
 }
@@ -423,111 +466,112 @@ void MarchingCubes::update()
 	mesh.clear();
 	mesh.setMode(OF_PRIMITIVE_TRIANGLES);
 
-	int nCase,x,y,z;
+	int nCase, x, y, z;
 	bool bComputed;
-	
-	m_nNumIndices  = 0;
+
+	m_nNumIndices = 0;
 	m_nNumVertices = 0;
-	
+
 	// Clear status grids
-	memset(m_pnGridPointStatus, 0, (m_nGridSizep1)*(m_nGridSizep1)*(m_nGridSizep1));
-	memset(m_pnGridVoxelStatus, 0, (m_nGridSize  )*(m_nGridSize  )*(m_nGridSize  ));
-	
-	for( int i = 0; i < m_Balls.size(); i++ ){
-		if (m_Balls[i].m > 0){
-			
+	memset(m_pnGridPointStatus, 0, (m_nGridSizep1) * (m_nGridSizep1) * (m_nGridSizep1));
+	memset(m_pnGridVoxelStatus, 0, (m_nGridSize) * (m_nGridSize) * (m_nGridSize));
+
+	for (int i = 0; i < m_Balls.size(); i++) {
+		if (m_Balls[i].m > 0) {
+
 			x = ConvertWorldCoordinateToGridPoint(m_Balls[i].p[0]);
 			y = ConvertWorldCoordinateToGridPoint(m_Balls[i].p[1]);
 			z = ConvertWorldCoordinateToGridPoint(m_Balls[i].p[2]);
-			
+
 			// Work our way out from the center of the ball until the surface is
 			// reached. If the voxel at the surface is already computed then this
 			// ball share surface with a previous ball.
 			bComputed = false;
-			while(1){
-				if( IsGridVoxelComputed(x,y,z) ){
+			while (1) {
+				if (IsGridVoxelComputed(x, y, z)) {
 					bComputed = true;
 					break;
 				}
-				
-				nCase = ComputeGridVoxel(x,y,z);
-				if( nCase < 255 )
+
+				nCase = ComputeGridVoxel(x, y, z);
+				if (nCase < 255)
 					break;
-				
+
 				z--;
 			}
-			
-			if( bComputed )
+
+			if (bComputed)
 				continue;
-			
+
 			// Compute all voxels on the surface by computing neighbouring voxels
 			// if the surface goes into them.
-			AddNeighborsToList(nCase,x,y,z);
-			
-			while( m_nNumOpenVoxels ){
+			AddNeighborsToList(nCase, x, y, z);
+
+			while (m_nNumOpenVoxels) {
 				m_nNumOpenVoxels--;
-				x = m_pOpenVoxels[m_nNumOpenVoxels*3    ];
-				y = m_pOpenVoxels[m_nNumOpenVoxels*3 + 1];
-				z = m_pOpenVoxels[m_nNumOpenVoxels*3 + 2];
-				
-				nCase = ComputeGridVoxel(x,y,z);
-				AddNeighborsToList(nCase,x,y,z);
+				x = m_pOpenVoxels[m_nNumOpenVoxels * 3];
+				y = m_pOpenVoxels[m_nNumOpenVoxels * 3 + 1];
+				z = m_pOpenVoxels[m_nNumOpenVoxels * 3 + 2];
+
+				nCase = ComputeGridVoxel(x, y, z);
+				AddNeighborsToList(nCase, x, y, z);
 			}
 		}
-	}		
+	}
 }
 
 void MarchingCubes::AddNeighborsToList(int nCase, int x, int y, int z)
 {
-	if( MarchingCubes::m_CubeNeighbors[nCase] & (1<<0) )
-		AddNeighbor(x+1, y, z);
-	
-	if( MarchingCubes::m_CubeNeighbors[nCase] & (1<<1) )
-		AddNeighbor(x-1, y, z);
-	
-	if( MarchingCubes::m_CubeNeighbors[nCase] & (1<<2) )
-		AddNeighbor(x, y+1, z);
-	
-	if( MarchingCubes::m_CubeNeighbors[nCase] & (1<<3) )
-		AddNeighbor(x, y-1, z);
-	
-	if( MarchingCubes::m_CubeNeighbors[nCase] & (1<<4) )
-		AddNeighbor(x, y, z+1);
-	
-	if( MarchingCubes::m_CubeNeighbors[nCase] & (1<<5) )
-		AddNeighbor(x, y, z-1);
+	if (MarchingCubes::m_CubeNeighbors[nCase] & (1 << 0))
+		AddNeighbor(x + 1, y, z);
+
+	if (MarchingCubes::m_CubeNeighbors[nCase] & (1 << 1))
+		AddNeighbor(x - 1, y, z);
+
+	if (MarchingCubes::m_CubeNeighbors[nCase] & (1 << 2))
+		AddNeighbor(x, y + 1, z);
+
+	if (MarchingCubes::m_CubeNeighbors[nCase] & (1 << 3))
+		AddNeighbor(x, y - 1, z);
+
+	if (MarchingCubes::m_CubeNeighbors[nCase] & (1 << 4))
+		AddNeighbor(x, y, z + 1);
+
+	if (MarchingCubes::m_CubeNeighbors[nCase] & (1 << 5))
+		AddNeighbor(x, y, z - 1);
 }
 
 void MarchingCubes::AddNeighbor(int x, int y, int z)
 {
-	if( IsGridVoxelComputed(x,y,z) || IsGridVoxelInList(x,y,z) )
+	if (IsGridVoxelComputed(x, y, z) || IsGridVoxelInList(x, y, z))
 		return;
-	
+
 	// Make sure the array is large enough
-	if( m_nMaxOpenVoxels == m_nNumOpenVoxels ){
+	//TODO: 为什么不用vector？
+	if (m_nMaxOpenVoxels == m_nNumOpenVoxels) {
 		m_nMaxOpenVoxels *= 2;
-		int *pTmp = new int[m_nMaxOpenVoxels*3];
-		memcpy(pTmp, m_pOpenVoxels, m_nNumOpenVoxels*3*sizeof(int));
+		int* pTmp = new int[m_nMaxOpenVoxels * 3];
+		memcpy(pTmp, m_pOpenVoxels, m_nNumOpenVoxels * 3 * sizeof(int));
 		delete[] m_pOpenVoxels;
 		m_pOpenVoxels = pTmp;
 	}
-	
-	int n3 = m_nNumOpenVoxels*3;
-	m_pOpenVoxels[n3  ] = x;
-	m_pOpenVoxels[n3+1] = y;
-	m_pOpenVoxels[n3+2] = z;
-	
-	SetGridVoxelInList(x,y,z);
+
+	int n3 = m_nNumOpenVoxels * 3;
+	m_pOpenVoxels[n3] = x;
+	m_pOpenVoxels[n3 + 1] = y;
+	m_pOpenVoxels[n3 + 2] = z;
+
+	SetGridVoxelInList(x, y, z);
 	m_nNumOpenVoxels++;
 }
 
 // modified from ken perlin http://www.geisswerks.com/ryan/BLOBS/blobs.html
 inline float getEnergy(const ofVec3f& vertex, const ofVec3f& center, float min, float max) {
 	float r = vertex.distance(center) / 2; // / 2 because the space is double size. but this isn't quite right
-	if(r >= max) {
+	if (r >= max) {
 		return 0;
 	}
-	if(r <= min) {
+	if (r <= min) {
 		return 1;
 	}
 	r = (r - min) / (max - min);
@@ -538,26 +582,26 @@ float MarchingCubes::ComputeEnergy(float x, float y, float z)
 {
 	float fEnergy = 0;
 	float fSqDist;
-	float dx,dy,dz;
-	
+	float dx, dy, dz;
+
 	ofVec3f vertex(x, y, z);
-	
-	for( int i = 0; i < m_Balls.size(); i++ ){	
+
+	for (int i = 0; i < m_Balls.size(); i++) {
 		ofVec3f& center = m_Balls[i].p;
 		float& mass = m_Balls[i].m;
 		float cur = getEnergy(vertex, center, minRadius * mass, maxRadius * mass);
 		fEnergy += cur;
 	}
-	
+
 	return fEnergy;
 }
 
-void MarchingCubes::ComputeNormal(SVertex *pVertex)
+void MarchingCubes::ComputeNormal(SVertex* pVertex)
 {
 	float fSqDist;
 	float K;
-	
-	for( int i = 0; i < m_Balls.size(); i ++ ){
+
+	for (int i = 0; i < m_Balls.size(); i++) {
 		// To compute the normal we derive the energy formula and get
 		//   n += 2 * mass * vector / distance^4
 		ofVec3f& p = m_Balls[i].p;
@@ -565,152 +609,152 @@ void MarchingCubes::ComputeNormal(SVertex *pVertex)
 		float x = v[0] - p[0];
 		float y = v[1] - p[1];
 		float z = v[2] - p[2];
-		
-		fSqDist = x*x + y*y + z*z;
+
+		fSqDist = x * x + y * y + z * z;
 		K = 2.0 * m_Balls[i].m / (fSqDist * fSqDist);
 		pVertex->n[0] += K * x;
 		pVertex->n[1] += K * y;
 		pVertex->n[2] += K * z;
 	}
-	
+
 	float vx = pVertex->n[0];
 	float vy = pVertex->n[1];
 	float vz = pVertex->n[2];
-	float vh = sqrt(vx*vx + vy*vy + vz*vz);
-	if (vh > 0){
+	float vh = sqrt(vx * vx + vy * vy + vz * vz);
+	if (vh > 0) {
 		pVertex->n[0] /= vh;
 		pVertex->n[1] /= vh;
 		pVertex->n[2] /= vh;
 	}
-		
+
 }
 
 inline float MarchingCubes::ComputeGridPointEnergy(int x, int y, int z)
 {
-	if( IsGridPointComputed(x,y,z) )
+	if (IsGridPointComputed(x, y, z))
 		return m_pfGridEnergy[x +
-		                      y*(m_nGridSizep1) +
-		                      z*(m_nGridSizep1)*(m_nGridSizep1)];
-	
+		y * (m_nGridSizep1)+
+		z * (m_nGridSizep1) * (m_nGridSizep1)];
+
 	// The energy on the edges are always zero to make sure the isosurface is
 	// always closed.
-	if( x <= 1 || y <= 1 || z <= 1 ||
-		 x >= m_nGridSize || y >= m_nGridSize || z >= m_nGridSize ){
+	if (x <= 1 || y <= 1 || z <= 1 ||
+		x >= m_nGridSize || y >= m_nGridSize || z >= m_nGridSize) {
 		m_pfGridEnergy[x +
-		               y*(m_nGridSizep1) +
-		               z*(m_nGridSizep1)*(m_nGridSizep1)] = 0;
-		SetGridPointComputed(x,y,z);
+			y * (m_nGridSizep1)+
+			z * (m_nGridSizep1) * (m_nGridSizep1)] = 0;
+		SetGridPointComputed(x, y, z);
 		return 0;
 	}
-	
+
 	float fx = ConvertGridPointToWorldCoordinate(x);
 	float fy = ConvertGridPointToWorldCoordinate(y);
 	float fz = ConvertGridPointToWorldCoordinate(z);
-	
+
 	float out = m_pfGridEnergy[x +
-														 y*(m_nGridSizep1) +
-														 z*(m_nGridSizep1)*(m_nGridSizep1)] = ComputeEnergy(fx,fy,fz);
-	
-	SetGridPointComputed(x,y,z);
+		y * (m_nGridSizep1)+
+		z * (m_nGridSizep1) * (m_nGridSizep1)] = ComputeEnergy(fx, fy, fz);
+
+	SetGridPointComputed(x, y, z);
 	return out;
 }
 
 int MarchingCubes::ComputeGridVoxel(int x, int y, int z)
 {
 	float b[8];
-	
-	b[0] = ComputeGridPointEnergy(x  , y  , z  );
-	b[1] = ComputeGridPointEnergy(x+1, y  , z  );
-	b[2] = ComputeGridPointEnergy(x+1, y  , z+1);
-	b[3] = ComputeGridPointEnergy(x  , y  , z+1);
-	b[4] = ComputeGridPointEnergy(x  , y+1, z  );
-	b[5] = ComputeGridPointEnergy(x+1, y+1, z  );
-	b[6] = ComputeGridPointEnergy(x+1, y+1, z+1);
-	b[7] = ComputeGridPointEnergy(x  , y+1, z+1);
-	
-	float fx = ConvertGridPointToWorldCoordinate(x) + m_fVoxelSize/2;
-	float fy = ConvertGridPointToWorldCoordinate(y) + m_fVoxelSize/2;
-	float fz = ConvertGridPointToWorldCoordinate(z) + m_fVoxelSize/2;
-	
+
+	b[0] = ComputeGridPointEnergy(x, y, z);
+	b[1] = ComputeGridPointEnergy(x + 1, y, z);
+	b[2] = ComputeGridPointEnergy(x + 1, y, z + 1);
+	b[3] = ComputeGridPointEnergy(x, y, z + 1);
+	b[4] = ComputeGridPointEnergy(x, y + 1, z);
+	b[5] = ComputeGridPointEnergy(x + 1, y + 1, z);
+	b[6] = ComputeGridPointEnergy(x + 1, y + 1, z + 1);
+	b[7] = ComputeGridPointEnergy(x, y + 1, z + 1);
+
+	float fx = ConvertGridPointToWorldCoordinate(x) + m_fVoxelSize / 2;
+	float fy = ConvertGridPointToWorldCoordinate(y) + m_fVoxelSize / 2;
+	float fz = ConvertGridPointToWorldCoordinate(z) + m_fVoxelSize / 2;
+
 	int c = 0;
-	c |= b[0] > fLevel ?   1 : 0;
-	c |= b[1] > fLevel ?   2 : 0;
-	c |= b[2] > fLevel ?   4 : 0;
-	c |= b[3] > fLevel ?   8 : 0;
-	c |= b[4] > fLevel ?  16 : 0;
-	c |= b[5] > fLevel ?  32 : 0;
-	c |= b[6] > fLevel ?  64 : 0;
+	c |= b[0] > fLevel ? 1 : 0;
+	c |= b[1] > fLevel ? 2 : 0;
+	c |= b[2] > fLevel ? 4 : 0;
+	c |= b[3] > fLevel ? 8 : 0;
+	c |= b[4] > fLevel ? 16 : 0;
+	c |= b[5] > fLevel ? 32 : 0;
+	c |= b[6] > fLevel ? 64 : 0;
 	c |= b[7] > fLevel ? 128 : 0;
-	
+
 	// Compute vertices from marching pyramid case
 	fx = ConvertGridPointToWorldCoordinate(x);
 	fy = ConvertGridPointToWorldCoordinate(y);
 	fz = ConvertGridPointToWorldCoordinate(z);
-	
+
 	int i = 0;
 	float t, omt;
 	unsigned short EdgeIndices[12];
-	memset(EdgeIndices, 0xFF, 12*sizeof(unsigned short));
-	while(1){
-		int nEdge =	MarchingCubes::m_CubeTriangles[c][i];
-		if( nEdge == -1 )
+	memset(EdgeIndices, 0xFF, 12 * sizeof(unsigned short));
+	while (1) {
+		int nEdge = MarchingCubes::m_CubeTriangles[c][i];
+		if (nEdge == -1)
 			break;
-		
-		if( EdgeIndices[nEdge] == 0xFFFF )
+
+		if (EdgeIndices[nEdge] == 0xFFFF)
 		{
 			EdgeIndices[nEdge] = m_nNumVertices;
-			if (m_nNumVertices < m_nMaxNumVertices){
-				
+			if (m_nNumVertices < m_nMaxNumVertices) {
+
 				// Optimization: It's possible that the non-interior edges
 				// have been computed already in neighbouring voxels
-				
+
 				// Compute the vertex by interpolating between the two points
 				int nIndex0 = MarchingCubes::m_CubeEdges[nEdge][0];
 				int nIndex1 = MarchingCubes::m_CubeEdges[nEdge][1];
-				
-				float *mcvn0 = MarchingCubes::m_CubeVertices[nIndex0];
-				float *mcvn1 = MarchingCubes::m_CubeVertices[nIndex1];
-				
-				t = (fLevel - b[nIndex0])/(b[nIndex1] - b[nIndex0]);
+
+				float* mcvn0 = MarchingCubes::m_CubeVertices[nIndex0];
+				float* mcvn1 = MarchingCubes::m_CubeVertices[nIndex1];
+
+				t = (fLevel - b[nIndex0]) / (b[nIndex1] - b[nIndex0]);
 				omt = 1.0f - t;
-				
-				m_pVertices[m_nNumVertices].v[0] = mcvn0[0]*omt + mcvn1[0]*t;
-				m_pVertices[m_nNumVertices].v[1] = mcvn0[1]*omt + mcvn1[1]*t;
-				m_pVertices[m_nNumVertices].v[2] = mcvn0[2]*omt + mcvn1[2]*t;
-				
+
+				m_pVertices[m_nNumVertices].v[0] = mcvn0[0] * omt + mcvn1[0] * t;
+				m_pVertices[m_nNumVertices].v[1] = mcvn0[1] * omt + mcvn1[1] * t;
+				m_pVertices[m_nNumVertices].v[2] = mcvn0[2] * omt + mcvn1[2] * t;
+
 				m_pVertices[m_nNumVertices].v[0] = fx +
-				m_pVertices[m_nNumVertices].v[0]*m_fVoxelSize;
+					m_pVertices[m_nNumVertices].v[0] * m_fVoxelSize;
 				m_pVertices[m_nNumVertices].v[1] = fy +
-				m_pVertices[m_nNumVertices].v[1]*m_fVoxelSize;
+					m_pVertices[m_nNumVertices].v[1] * m_fVoxelSize;
 				m_pVertices[m_nNumVertices].v[2] = fz +
-				m_pVertices[m_nNumVertices].v[2]*m_fVoxelSize;
-				
+					m_pVertices[m_nNumVertices].v[2] * m_fVoxelSize;
+
 				// Compute the normal at the vertex
 				ComputeNormal(&m_pVertices[m_nNumVertices]);
-				
+
 				m_nNumVertices++;
 			}
 		}
-		
+
 		// Add the edge's vertex index to the index list
-		if (m_nNumIndices < MAX_INDICES){
+		if (m_nNumIndices < MAX_INDICES) {
 			m_pIndices[m_nNumIndices] = EdgeIndices[nEdge];
 			m_nNumIndices++;
 		}
 		i++;
 	}
-	
-	SetGridVoxelComputed (x,y,z);
-	
-	for (int i=0; i<m_nNumIndices; i++){
+
+	SetGridVoxelComputed(x, y, z);
+
+	for (int i = 0; i < m_nNumIndices; i++) {
 		SVertex V = m_pVertices[m_pIndices[i]];
 		mesh.addNormal(V.n);
 		mesh.addVertex((V.v + 1) / 2);
 	}
-	
+
 	m_nNumVertices = 0;
 	m_nNumIndices = 0;
-	
+
 	return c;
 }
 
@@ -719,20 +763,20 @@ int MarchingCubes::ComputeGridVoxel(int x, int y, int z)
 
 inline float MarchingCubes::ConvertGridPointToWorldCoordinate(int x)
 {
-	return float(x)*m_fVoxelSize - 1.0f;
+	return float(x) * m_fVoxelSize - 1.0f;
 }
 
 int MarchingCubes::ConvertWorldCoordinateToGridPoint(float x)
 {
-	return int((x + 1.0f)/m_fVoxelSize + 0.5f);
+	return int((x + 1.0f) / m_fVoxelSize + 0.5f);
 }
 
 
 inline bool MarchingCubes::IsGridPointComputed(int x, int y, int z)
 {
-	if( m_pnGridPointStatus[x +
-	                        y*(m_nGridSize+1) +
-	                        z*(m_nGridSize+1)*(m_nGridSize+1)] == 1 )
+	if (m_pnGridPointStatus[x +
+		y * (m_nGridSize + 1) +
+		z * (m_nGridSize + 1) * (m_nGridSize + 1)] == 1)
 		return true;
 	else
 		return false;
@@ -740,9 +784,9 @@ inline bool MarchingCubes::IsGridPointComputed(int x, int y, int z)
 
 inline bool MarchingCubes::IsGridVoxelComputed(int x, int y, int z)
 {
-	if( m_pnGridVoxelStatus[x +
-	                        y*m_nGridSize +
-	                        z*m_nGridSize*m_nGridSize] == 1 )
+	if (m_pnGridVoxelStatus[x +
+		y * m_nGridSize +
+		z * m_nGridSize * m_nGridSize] == 1)
 		return true;
 	else
 		return false;
@@ -750,9 +794,9 @@ inline bool MarchingCubes::IsGridVoxelComputed(int x, int y, int z)
 
 inline bool MarchingCubes::IsGridVoxelInList(int x, int y, int z)
 {
-	if( m_pnGridVoxelStatus[x +
-	                        y*m_nGridSize +
-	                        z*m_nGridSize*m_nGridSize] == 2 )
+	if (m_pnGridVoxelStatus[x +
+		y * m_nGridSize +
+		z * m_nGridSize * m_nGridSize] == 2)
 		return true;
 	else
 		return false;
@@ -761,22 +805,22 @@ inline bool MarchingCubes::IsGridVoxelInList(int x, int y, int z)
 inline void MarchingCubes::SetGridPointComputed(int x, int y, int z)
 {
 	m_pnGridPointStatus[x +
-	                    y*(m_nGridSizep1) +
-	                    z*(m_nGridSizep1)*(m_nGridSizep1)] = 1;
+		y * (m_nGridSizep1)+
+		z * (m_nGridSizep1) * (m_nGridSizep1)] = 1;
 }
 
 inline void MarchingCubes::SetGridVoxelComputed(int x, int y, int z)
 {
 	m_pnGridVoxelStatus[x +
-	                    y*m_nGridSize +
-	                    z*m_nGridSize*m_nGridSize] = 1;
+		y * m_nGridSize +
+		z * m_nGridSize * m_nGridSize] = 1;
 }
 
 inline void MarchingCubes::SetGridVoxelInList(int x, int y, int z)
 {
 	m_pnGridVoxelStatus[x +
-	                    y*m_nGridSize +
-	                    z*m_nGridSize*m_nGridSize] = 2;
+		y * m_nGridSize +
+		z * m_nGridSize * m_nGridSize] = 2;
 }
 
 void MarchingCubes::draw(ofColor color) {

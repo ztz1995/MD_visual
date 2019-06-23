@@ -6,7 +6,7 @@ void ofApp::setup() {
 	settings = Settings();
 	settings.setup();
 	model = new AtomModel(&settings);
-	model->setup(1, "data/atom_data/atom_info_");
+	model->setup(5, "data/atom_data/atom_info_");
 	settings.bindEventsToModel(model);
 
 
@@ -46,7 +46,7 @@ void ofApp::draw() {
 	//light.enable();
 	//light2.enable();
 
-	
+
 	mycam.end();
 	ofDisableDepthTest();
 }

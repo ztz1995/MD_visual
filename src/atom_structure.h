@@ -7,7 +7,6 @@
 #include "ofMain.h"
 #include "MarchingCubes.h"
 
-using namespace std;
 
 class Atom {
 public:

@@ -1,6 +1,7 @@
 #pragma once
 #include "atom_structure.h"
 #include "settings.h"
+#include "MarchingCubes.h"
 
 class AtomModel {
 	friend class Settings;
@@ -18,7 +19,7 @@ public:
 private:
 	//TODO: make NUM_NEIGHBOR ,colors and neighbor R tunable.
 	const static int CENT_ID = 29;    //50 Ph  100 TO
-	const static int NUM_NEIGHBOR = 100;
+	const static int NUM_NEIGHBOR = 10;
 	bool playing = true;
 	void onPlayButton(ofxDatGuiButtonEvent e);
 	void onPauseButton(ofxDatGuiButtonEvent e);

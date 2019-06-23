@@ -8,7 +8,7 @@
 // basic element
 Atom::Atom() {}
 
-Atom::Atom(json atm_js, float axis_length) {
+Atom::Atom(ofJson atm_js, float axis_length) {
 	int id = atm_js["id"], group_id = atm_js["group_id"], mole_id = atm_js["mole_id"];
 	string group_type = atm_js["group_type"], element = atm_js["element"];
 	vector<float> co = atm_js["coordinate"];
@@ -18,7 +18,8 @@ Atom::Atom(json atm_js, float axis_length) {
 	this->group_id = group_id;
 	this->group_type = group_type;
 	this->element = element;
-	this->coordinate = ofVec3f(co[0] - axis_length / 2, co[1] - axis_length / 2, co[2] - axis_length / 2);
+	// this->coordinate = ofVec3f((co[0] - axis_length / 2.)/100.+0.5, (co[1] - axis_length / 2.) / 100. + 0.5, (co[2] - axis_length / 2.) / 100. + 0.5);
+	this->coordinate = ofVec3f(co[0] - axis_length / 2., co[1] - axis_length / 2., co[2] - axis_length / 2.);
 	this->f_e = f_e;
 	this->f_r = f_r;
 	this->charge = charge;
@@ -42,12 +43,43 @@ void AtomGroup::append_atom(Atom _atom) {
 	}
 }
 
+void AtomGroup::update() {
+	if (!cal_iso) {
+		ofVec3f max_co = {0.,0.,0.};
+		ofVec3f dif = { 0.,0.,0. };
+		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+			dif = map_it->second.coordinate - get_center();
+			for (int i = 0; i < 3; i++) {
+				if (fabs(dif[i]) > max_co[i])
+					max_co = ofVec3f(fabs(dif[i]));
+			}
+		}
+		max_co += 3;
+		iso_scale = max_co * 2;
+		vector<ofPoint> centers;
+		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+			centers.push_back((map_it->second.coordinate - get_center()+max_co)/iso_scale);
+			//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
+		}
+		iso.setup(64);
+		this->iso.setCenters(centers);
+		this->iso.setRadius(1. / 16., 2. / 16.);
+		this->iso.update();
+		cal_iso = TRUE;
+	}
+};
 
 void AtomGroup::draw(ofColor color) {
-	ofSetColor(color);
-	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-		ofDrawIcoSphere(map_it->second.coordinate, map_it->second.f_r / 4.);
-	}
+	ofPushMatrix();
+	ofTranslate(get_center());
+	ofScale(iso_scale);
+	iso.draw(color);
+	ofPopMatrix();
+	//for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+	//	ofDrawIcoSphere(map_it->second.coordinate, 1);
+	//}
+
+	
 #ifdef DEBUG
 	cout << "draw atom at: " << map_it->second.coordinate << endl;
 #endif // DEBUG
@@ -91,7 +123,7 @@ void Atom3D::append_atom(Atom _atom) {
 }
 
 void Atom3D::load_from_json(string fp) {
-	json atom_info;
+	ofJson atom_info;
 	if (!std::filesystem::exists(fp)) {
 		ofLogNotice() << "file not exist: " << fp;
 		throw fp;
@@ -102,9 +134,9 @@ void Atom3D::load_from_json(string fp) {
 		//ofLogNotice() << "file loaded: " << fp;
 	}
 	this->axis_length = atom_info["length"];
-	for (json::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
+	for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
 		if (it.key() != "length") {
-			json atm_json = it.value();
+			ofJson atm_json = it.value();
 			Atom new_atom(atm_json, this->axis_length);
 			append_atom(new_atom);
 		}

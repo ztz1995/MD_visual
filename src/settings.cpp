@@ -22,7 +22,7 @@ void Settings::setup() {
 	stopButton = actions->addButton(" ** Stop");
 	actions->expand();
 	gui->addBreak();
-	//model settings£º FR, opacity, color, neighbor_num, cent_id
+	//model settings:: FR, opacity, color, neighbor_num, cent_id
 	modelFolder = gui->addFolder("Model Settings",ofColor::green);
 	modelNeighborSlider = modelFolder->addSlider("Neighbor num", 0, 20, 8);
 	modelNeighborSlider->setPrecision(0);
@@ -49,11 +49,11 @@ void Settings::setup() {
 	scaleInput = infoBoard->addTextInput("Panel Scale", "1.2");
 	scaleInput->setInputType(ofxDatGuiInputType::NUMERIC);
 	scaleInput->onTextInputEvent(this, &Settings::onTextInputEvent);
-	
+
 	infoBoard->expand();
 }
 void Settings::update() {
-	
+
 }
 
 void Settings::bindEventsToModel(AtomModel* model)

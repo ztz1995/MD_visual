@@ -4,11 +4,10 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include "json.hpp"
 #include "ofMain.h"
+#include "MarchingCubes.h"
 
 using namespace std;
-using namespace nlohmann;
 
 class Atom {
 public:
@@ -17,7 +16,7 @@ public:
 	double f_e = 0., f_r = 0., charge = 0.;
 	ofVec3f coordinate = ofVec3f(0., 0., 0.);
 	Atom();
-	Atom::Atom(json atm_js, float axis_length);
+	Atom::Atom(ofJson atm_js, float axis_length);
 };
 
 class AtomGroup {
@@ -29,6 +28,10 @@ public:
 	AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type);
 	void append_atom(Atom _atom);
 
+	MarchingCubes iso;
+	bool cal_iso = FALSE;
+	ofVec3f iso_scale;
+	void update();
 	void draw(ofColor color = ofColor(3, 168, 158, 240));
 	bool cal_center = FALSE;
 	ofVec3f center;
@@ -45,7 +48,7 @@ public:
 	map<int, AtomGroup> group_map;
 	void append_atom(Atom input_atom);
 	void load_from_json(string fp);
-	vector<int> get_neighbor_group_id(const int center_group_id);
+	vector<int> get_neighbor_group_id(const int center_group_id, float r = 15.f);
 private:
 	vector<int> _arg_sort(vector<float> ivec, vector<int> arg_vec);
 };
@@ -57,12 +60,13 @@ public:
 	void update(float _l);
 	void draw();
 	void draw(ofColor color);
+	float length;
 
 private:
 	const int connect[12][2] = { {0,1}, {0,2}, {0,4}, {3,1}, {3,2}, {3,7}, {5,4}, {1,5}, {5,7}, {6,2}, {6,7}, {6,4} };
 	ofPolyline line[12];
 	ofNode node[8];
-	float length;
+
 };
 
 float cal_vdw(Atom atom1, Atom atom2, float r);

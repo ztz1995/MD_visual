@@ -24,7 +24,7 @@ void Settings::setup() {
 	gui->addBreak();
 	//model settings
 	modelFolder = gui->addFolder("Model Settings");
-	modelRealFRM = modelFolder->addTextInput("Real FR", "0");
+	modelRealFRM = modelFolder->addTextInput("Refresh FR", "0");
 	modelRealFRM->setEnabled(false);
 	modelFrameRateSlider = modelFolder->addSlider("Model FR", 1, 120, 60);
 	modelFrameRateSlider->setPrecision(0);

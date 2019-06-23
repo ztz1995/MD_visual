@@ -1,6 +1,8 @@
 #pragma once
+
 #include "atom_structure.h"
 #include "settings.h"
+#include "MarchingCubes.h"
 
 class AtomModel {
 	friend class Settings;
@@ -13,19 +15,20 @@ public:
 	void draw();
 	void update();
 	float getAxisLength();
-	//vector<int> neighbor_id;
 	vector<Atom3D> model_frames;
 	vector<vector<int>> frames_neighbor_id;
+
 private:
+	//TODO: make NUM_NEIGHBOR ,colors and neighbor R tunable.
 	const static int CENT_ID = 29;    //50 Ph  100 TO
-	const static int NUM_NEIGHBOR = 6;
+	const static int NUM_NEIGHBOR = 10;
 	bool playing = true;
 	void onPlayButton(ofxDatGuiButtonEvent e);
 	void onPauseButton(ofxDatGuiButtonEvent e);
 	void onStopButton(ofxDatGuiButtonEvent e);
 	// data params: prefix&frame_num
 	string path_prefix;
-	int cur_frame = 0, init_frame = 0, last_frame = 0, frame_num = 0;
+	int cur_frame = 0, init_frame = 0, last_frame = -1, frame_num = 0;
 	// setting model params
 	bool fully_dissolved;
 	void onDissolvedToggle(ofxDatGuiToggleEvent e);

@@ -22,6 +22,36 @@ void AtomModel::setup(int frames, string prefix)
 	loadData(frames, prefix);
 }
 
+void AtomModel::update()
+{
+	if (playing) {
+		cur_frame = (ofGetElapsedTimeMicros() / (1000000 / frame_rate) + init_frame) % frame_num;
+		// only update when current frame changed
+		if (cur_frame != last_frame) {
+			axis.update(model_frames[cur_frame].axis_length);
+			model_frames[cur_frame].group_map[CENT_ID].update();
+			int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), NUM_NEIGHBOR);
+			for (int i = 0; i < max_neighbors; i++) {
+				model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].update();
+			}
+			//neighbor_id.clear();
+			//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(CENT_ID);
+		}
+		last_frame = cur_frame;
+	}
+}
+
+void AtomModel::draw(){
+	axis.draw();
+	// here you will draw your object
+	model_frames[cur_frame].group_map[CENT_ID].draw(ofColor(148, 0, 211, 240));
+	////mmp, neighbor_id may be size 0 when draw() called first time.
+	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), NUM_NEIGHBOR);
+	for (int i = 0; i < max_neighbors; i++) {
+		model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].draw(ofColor(color, opacity));
+	}
+}
+
 void AtomModel::loadData(int frames, string prefix)
 {
 	// all filepaths must be absolute or relative to bin/MD_visual_debug.exe
@@ -43,13 +73,13 @@ void AtomModel::loadData(int frames, string prefix)
 			else {
 				// different path, update new Atom3D
 				model_frames[i] = Atom3D(filepath);
-				frames_neighbor_id[i] = model_frames[i].get_neighbor_group_id(CENT_ID);
+				frames_neighbor_id[i] = model_frames[i].get_neighbor_group_id(CENT_ID, 100);
 			}
 		}
 		else {
 			// append the larger index items
 			model_frames.push_back(Atom3D(filepath));
-			frames_neighbor_id.push_back(model_frames[i].get_neighbor_group_id(CENT_ID));
+			frames_neighbor_id.push_back(model_frames[i].get_neighbor_group_id(CENT_ID, 100));
 		}
 	}
 	frame_num = frames;
@@ -64,32 +94,6 @@ void AtomModel::updateParams(int frame_rate_new, int opacity_new)
 	}
 	if (opacity_new >= 0) {
 		opacity = opacity_new;
-	}
-}
-
-void AtomModel::draw()
-{
-	axis.draw();
-	// here you will draw your object
-	model_frames[cur_frame].group_map[CENT_ID].draw(ofColor(148, 0, 211, 240));
-	//mmp, neighbor_id may be size 0 when draw() called first time.
-	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), NUM_NEIGHBOR);
-	for (int i = 0; i < max_neighbors; i++) {
-		model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].draw(ofColor(color, opacity));
-	}
-}
-
-void AtomModel::update()
-{
-	if (playing) {
-		cur_frame = (ofGetElapsedTimeMicros() / (1000000 / frame_rate) + init_frame) % frame_num;
-		// only update when current frame changed
-		if (cur_frame != last_frame) {
-			axis.update(model_frames[cur_frame].axis_length);
-			//neighbor_id.clear();
-			//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(CENT_ID);
-		}
-		last_frame = cur_frame;
 	}
 }
 

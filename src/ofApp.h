@@ -24,10 +24,9 @@ public:
 	void gotMessage(ofMessage msg);
 
 	ofEasyCam mycam;
-	Axis axis;
-
+	ofLight light;
+	ofLight light2;
 	Settings settings;
 	AtomModel* model;
-
 
 };

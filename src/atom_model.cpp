@@ -10,7 +10,7 @@ AtomModel::AtomModel(Settings* s)
 	}
 	else {
 		fully_dissolved = false;
-		frame_rate = 60;
+		frame_rate = 1;
 		opacity = 60;
 		color = ofColor(3, 168, 158);
 	}
@@ -93,9 +93,13 @@ void AtomModel::update()
 			}
 			//neighbor_id.clear();
 			//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(center_id);
+
+			//update particle system
+			atom3d.setup_particle(cur_frame, center_id, frames_neighbor_id[cur_frame]);
 		}
 		last_frame = cur_frame;
 	}
+	atom3d.update_particle();
 }
 
 void AtomModel::draw() {
@@ -103,7 +107,9 @@ void AtomModel::draw() {
 
 	axis.draw();
 	// here you will draw your object
+
 	atom3d.group_map[center_id].draw(cur_frame, ofColor(148, 0, 211, 240));
+
 	////mmp, neighbor_id may be size 0 when draw() called first time.
 
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
@@ -118,6 +124,9 @@ void AtomModel::draw() {
 
 		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(cur_frame, ofColor(color, opacity));
 	}
+
+	//draw particle system
+	atom3d.draw_particle();
 }
 
 void AtomModel::updateNeighbors(int _center_id, float _radius)

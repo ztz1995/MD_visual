@@ -9,11 +9,10 @@ void ofApp::setup() {
 	model->setup(5, "data/atom_data/atom_info_");
 	settings.bindEventsToModel(model);
 
-
 	// turn on smooth lighting //
 	ofSetSmoothLighting(true);
 	// Point lights emit light in all directions //
-	   // set the diffuse color, color reflected from the light source //
+	// set the diffuse color, color reflected from the light source //
 	pointLight.setDiffuseColor(ofColor(255, 255, 255));
 
 	// specular color, the highlight/shininess color //
@@ -22,11 +21,9 @@ void ofApp::setup() {
 
 	// turn the light into spotLight, emit a cone of light //
 	spotLight.setSpotlight();
-
 	// size of the cone of emitted light, angle between light axis and side of cone //
 	// angle range between 0 - 90 in degrees //
 	spotLight.setSpotlightCutOff(50);
-
 	// rate of falloff, illumitation decreases as the angle from the cone axis increases //
 	// range 0 - 128, zero is even illumination, 128 is max falloff //
 	spotLight.setSpotConcentration(45);
@@ -35,21 +32,12 @@ void ofApp::setup() {
 	directionalLight.setDiffuseColor(ofColor(255, 255, 255));
 	directionalLight.setSpecularColor(ofColor(255.f, 255.f, 255.f));
 	directionalLight.setDirectional();
-
 	// set the direction of the light
 	// set it pointing from left to right -> //
 	directionalLight.setOrientation(ofVec3f(0, 90, 0));
 
-
-
-
 	mycam.setDistance(model->getAxisLength() * 2);
 	ofResetElapsedTimeCounter();
-
-	//light.setPointLight();
-	//light2.setAmbientColor(225);
-
-
 }
 
 //--------------------------------------------------------------

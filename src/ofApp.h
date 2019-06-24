@@ -2,6 +2,7 @@
 //#define DEBUG
 #include "settings.h"
 #include "atom_model.h"
+#include "particle/particleSystem.h"
 
 class ofApp : public ofBaseApp {
 
@@ -34,5 +35,4 @@ public:
 
 	Settings settings;
 	AtomModel* model;
-
 };

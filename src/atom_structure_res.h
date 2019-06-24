@@ -6,6 +6,8 @@
 #include <iostream>
 #include "ofMain.h"
 #include "MarchingCubes.h"
+#include "particle/particle.h"
+#include "particle/particleSystem.h"
 
 
 class Atom {
@@ -58,6 +60,11 @@ public:
 	void update(string prefix, int frames);
 	void load_data(string prefix, int frames);
 
+	vector<particleSystem*> ps;
+	void setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id);
+	void update_particle();
+	void draw_particle();
+
 	vector<int> get_neighbor_group_id(const int center_group_id, float r = 15.f, int cur_frames = 0);
 
 private:
@@ -82,4 +89,4 @@ private:
 
 float cal_vdw(Atom atom1, Atom atom2, float r);
 float cal_elec(Atom atom1, Atom atom2, float r);
-float cal_frc(Atom atom1, Atom atom2);
+float cal_frc(Atom atom1, Atom atom2, int frame_no);

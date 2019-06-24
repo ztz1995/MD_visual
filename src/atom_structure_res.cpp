@@ -238,6 +238,68 @@ vector<int> Atom3D::_arg_sort(vector<float> ivec, vector<int> arg_vec) {
 	return arg_vec;
 }
 
+//void Atom3D::setup_particle(int cent_id) {
+//	AtomGroup & ct_grpz = group_map[cent_id];
+//	for (auto map_it = ct_grpz.atom_map.begin(); map_it != ct_grpz.atom_map.end(); map_it++) {
+//		if (map_it->second.element != "H") {
+//			ps.push_back(particleSystem(map_it->second.coordinate[0]));
+//		}
+//	}
+//};
+
+void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id) {
+	// update atom coordinate
+	ps.clear();
+	AtomGroup& ct_grp = group_map[cent_id];
+	int atom_num = 0;
+	for (auto c_it = ct_grp.atom_map.begin(); c_it != ct_grp.atom_map.end(); c_it++) {
+		Atom& c_atm = c_it->second;
+		if (c_atm.element != "H") {
+			ofVec3f force = { 0.,0.,0. };
+			for (int _n = 0; _n < neighbor_id.size(); _n++) {
+				int n_id = neighbor_id[_n];
+				AtomGroup& n_grp = group_map[n_id];
+				for (auto n_it = n_grp.atom_map.begin(); n_it != n_grp.atom_map.end(); n_it++) {
+					Atom& n_atm = n_it->second;
+					ofVec3f direction = (c_atm.coordinate[cur_frame] - n_atm.coordinate[cur_frame]).normalize();
+					force += direction * cal_frc(c_atm, n_atm, cur_frame);
+				}
+			}
+			ps.push_back(new particleSystem(c_atm.coordinate[cur_frame], force * 10));
+			//cout << force*10 << endl;
+			atom_num++;
+		}
+	}
+	//for (auto map_it = ct_grpz.atom_map.begin(); map_it != ct_grpz.atom_map.end(); map_it++) {
+	//	if (map_it->second.element != "H") {
+	//		ofVec3f force = { 0.,0.,0. };
+	//		ps.push_back(particleSystem(map_it->second.coordinate[0]));
+	//	}
+	//}
+
+};
+
+void Atom3D::update_particle() {
+	for (int i = 0; i < ps.size(); i++) {
+		ps.at(i)->update();
+		ps.at(i)->addParticle();
+	}
+
+	//for (auto vec_it = ps.begin(); vec_it != ps.end(); vec_it++) {
+	//	vec_it->->update();
+	//}
+};
+
+
+void Atom3D::draw_particle() {
+	for (int i = 0; i < ps.size(); i++) {
+		ps.at(i)->display();
+	}
+	//for (auto vec_it = ps.begin(); vec_it != ps.end(); vec_it++) {
+	//	vec_it->display();
+	//}
+};
+
 // Axis implement
 Axis::Axis() {
 	length = 300.0;

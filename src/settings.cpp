@@ -33,7 +33,7 @@ void Settings::setup() {
 	modelCentIdSlider->setPrecision(0);
 	modelRadiusSlider = modelFolder->addSlider("Radius", 0, 100, 50);
 	modelRadiusSlider->setPrecision(1);
-	modelFrameRateSlider = modelFolder->addSlider("Model FR", 1, 25, 15);
+	modelFrameRateSlider = modelFolder->addSlider("Model FR", 1, 25, 1);
 	modelFrameRateSlider->setPrecision(0);
 	modelOpacitySlider = modelFolder->addSlider("Opacity", 0, 255, 200);
 	modelOpacitySlider->setPrecision(0);

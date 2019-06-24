@@ -31,7 +31,18 @@
     <ClCompile Include="src\MarchingCubes.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\atom_structure_res.cpp" />
+    <ClCompile Include="src\particle\particle.cpp">
+      <Filter>src\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\particle\particleRectangle.cpp">
+      <Filter>src\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\particle\particleSystem.cpp">
+      <Filter>src\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\atom_structure_res.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -60,6 +71,9 @@
     </Filter>
     <Filter Include="addons\ofxDatGui\src\themes">
       <UniqueIdentifier>{2646318C-49AB-44C5-70D8-23E6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\particle">
+      <UniqueIdentifier>{37880786-6c0e-4c8d-a60b-c1ee2cc96fe6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,7 +155,18 @@
     <ClInclude Include="src\MarchingCubes.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\atom_structure_res.h" />
+    <ClInclude Include="src\particle\particle.h">
+      <Filter>src\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\particle\particleRectangle.h">
+      <Filter>src\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\particle\particleSystem.h">
+      <Filter>src\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\atom_structure_res.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

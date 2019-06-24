@@ -9,6 +9,7 @@ Settings::Settings() {
 	gui = new ofxDatGui();
 }
 void Settings::setup() {
+	gui->setAutoDraw(FALSE);
 	gui->addHeader("Setting Panel");
 	gui->addFooter();
 	gui->getFooter()->setLabelWhenExpanded("Setting Panel - CLOSE");

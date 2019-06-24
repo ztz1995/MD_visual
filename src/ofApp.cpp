@@ -54,12 +54,12 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	if (settings.gui->getMouseDown()) {
-		mycam.disableMouseInput();
-	}
-	else {
-		mycam.enableMouseInput();
-	}
+	//if (settings.gui->getMouseDown()) {
+	//	mycam.disableMouseInput();
+	//}
+	//else {
+	//	mycam.enableMouseInput();
+	//}
 	model->update();
 	settings.update();
 }
@@ -69,27 +69,28 @@ void ofApp::draw() {
 	ofEnableDepthTest();
 	ofBackgroundGradient(ofColor::white, ofColor::gray);
 	ofEnableDepthTest();
-	//ofEnableLighting();
 
 	// enable lighting //
 	ofEnableLighting();
-	// enable the material, so that it applies to all 3D objects before material.end() call //
-	//material.begin();
-	// activate the lights //
 	pointLight.enable();
 	spotLight.enable();
 	directionalLight.enable();
-
 
 	mycam.begin();
 
 	model->draw();
 
-	//light.enable();
-	//light2.enable();
-
-
 	mycam.end();
+
+	pointLight.disable();
+	spotLight.disable();
+	directionalLight.disable();
+	ofDisableLighting();
+
+	//mycam.begin();
+	settings.gui->draw();
+	//mycam.end();
+
 	ofDisableDepthTest();
 }
 

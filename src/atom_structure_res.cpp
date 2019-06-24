@@ -92,7 +92,7 @@ void AtomGroup::draw(int frame_no, ofColor color) {
 	// the light highlight of the material //
 	material.setDiffuseColor(color);
 	material.setSpecularColor(color);
-	material.setAmbientColor(ofColor(255, 255, 255, 255));
+	material.setAmbientColor(ofColor(255, 255, 255));
 	// shininess is a value between 0 - 128, 128 being the most shiny //
 	material.setShininess(64);
 	material.begin();
@@ -268,9 +268,9 @@ void Axis::draw() {
 	ofMaterial material;
 	material.setShininess(120);
 	// the light highlight of the material //
-	material.setDiffuseColor(ofColor(255));
-	material.setSpecularColor(ofColor(255));
-	material.setAmbientColor(ofColor(255, 255, 255, 255));
+	material.setDiffuseColor(ofColor(0));
+	material.setSpecularColor(ofColor(0));
+	material.setAmbientColor(ofColor(0));
 	// shininess is a value between 0 - 128, 128 being the most shiny //
 	material.setShininess(64);
 	material.begin();

@@ -14,7 +14,7 @@ public:
 	string group_type = "", element = "";
 	double f_e = 0., f_r = 0., charge = 0., mass=0.;
 	vector<ofVec3f> coordinate;
-	//int cur_frame = 0;
+
 	Atom();
 	Atom(ofJson atm_js, float axis_length);
 	void update(ofJson atm_js, float axis_length);
@@ -26,35 +26,41 @@ public:
 	int cur_frame = -1;
 	string group_type = "";
 	map<int, Atom> atom_map;
+
 	AtomGroup();
 	AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type);
 	void append_atom(Atom _atom);
 
+	void update(int frame_no);
+	void draw(ofColor color = ofColor(3, 168, 158, 240));
+
+	ofVec3f get_center(int cur_frame);
+
+private:
 	MarchingCubes iso;
 	bool set_iso = FALSE;
 	bool cal_iso = FALSE;
 	ofVec3f iso_scale;
-	void update(int frame_no);
-	void draw(ofColor color = ofColor(3, 168, 158, 240));
+
 	bool cal_center[1000] = { FALSE };
 	ofVec3f center[1000];
-	ofVec3f get_center(int cur_frame);
-private:
-
 };
 
 class Atom3D {
 public:
-	Atom3D();
-	Atom3D(string prefix, int frames);
-	void setup(string prefix);
-	void update(string prefix, int frames);
 	//int cur_frame = 0, last_frame = -1; 
 	vector<float> axis_length;
+	int frames = 0, max_group_id=0;
 	map<int, AtomGroup> group_map;
+
+	Atom3D();
 	void append_atom(Atom input_atom);
-	void load_from_json(string fp);
+	void setup(string prefix);
+	void update(string prefix, int frames);
+	void load_data(string prefix, int frames);
+
 	vector<int> get_neighbor_group_id(const int center_group_id, float r = 15.f, int cur_frames = 0);
+
 private:
 	vector<int> _arg_sort(vector<float> ivec, vector<int> arg_vec);
 };

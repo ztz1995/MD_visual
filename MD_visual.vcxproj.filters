@@ -10,9 +10,6 @@
     <ClCompile Include="src\atom_model.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\atom_structure.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -70,9 +67,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\atom_model.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\atom_structure.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\ofApp.h">

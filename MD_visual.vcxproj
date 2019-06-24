@@ -185,7 +185,6 @@
     <ClCompile Include="src\MarchingCubes.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\atom_model.cpp" />
-    <ClCompile Include="src\atom_structure.cpp" />
     <ClCompile Include="src\settings.cpp" />
     <ClCompile Include="..\..\addons\ofxDatGui\src\core\ofxDatGuiComponent.cpp" />
     <ClCompile Include="..\..\addons\ofxDatGui\src\libs\ofxSmartFont\ofxSmartFont.cpp" />
@@ -196,7 +195,6 @@
     <ClInclude Include="src\MarchingCubes.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\atom_model.h" />
-    <ClInclude Include="src\atom_structure.h" />
     <ClInclude Include="src\settings.h" />
     <ClInclude Include="..\..\addons\ofxDatGui\src\components\ofxDatGui2dPad.h" />
     <ClInclude Include="..\..\addons\ofxDatGui\src\components\ofxDatGuiButton.h" />

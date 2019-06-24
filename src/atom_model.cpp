@@ -24,38 +24,40 @@ void AtomModel::loadData(int frames, string prefix)
 	// all filepaths must be absolute or relative to bin/MD_visual_debug.exe
 	// please save data files to "bin/data/", not project root. And don't include them in project.
 	ofLogNotice() << "Ready to read " << frames << " frames with prefix " << prefix;
-	int old_len = model_frames.size();
-	int frame_no = -1;
-	while (true) {
-		frame_no += 1;
-		char fp[100];
-		sprintf_s(fp, "%03d.json", frame_no);
-		string filepath = prefix + string(fp);
-		if (filesystem::exists(filepath)) {
-			if (frame_no < frames) {
-				if (frame_no < old_len) {
-					if (prefix == path_prefix) {
-						//already read, skip.
-						continue;
-					}
-					else {
-						// different path, update new Atom3D
-						ofLogNotice() << "loading json: " << filepath;
-						model_frames[frame_no] = Atom3D(filepath);
-					}
-				}
-				else {
-					// append the larger index items
-					ofLogNotice() << "loading json: " << filepath;
-					model_frames.push_back(Atom3D(filepath));
-				}
-			}
-		}
-		else {
-			ofLogNotice() << filepath << " File not exist! stop reading!";
-			break;
-		}
-	}
+	//int old_len = model_frames.size();
+	//int frame_no = -1;
+	//while (true) {
+	//	frame_no += 1;
+	//	char fp[100];
+	//	sprintf_s(fp, "%03d.json", frame_no);
+	//	string filepath = prefix + string(fp);
+	//	if (filesystem::exists(filepath)) {
+	//		if (frame_no < frames) {
+	//			if (frame_no < old_len) {
+	//				if (prefix == path_prefix) {
+	//					//already read, skip.
+	//					continue;
+	//				}
+	//				else {
+	//					// different path, update new Atom3D
+	//					ofLogNotice() << "loading json: " << filepath;
+	//					model_frames[frame_no] = Atom3D(filepath);
+	//				}
+	//			}
+	//			else {
+	//				// append the larger index items
+	//				ofLogNotice() << "loading json: " << filepath;
+	//				model_frames.push_back(Atom3D(filepath));
+	//			}
+	//		}
+	//	}
+	//	else {
+	//		ofLogNotice() << filepath << " File not exist! stop reading!";
+	//		break;
+	//	}
+	//}
+	atom3d.load_data(prefix, frames);
+	int frame_no = atom3d.frames;
 
 	// update parameters
 	frame_num = min(frame_no, frames);
@@ -63,8 +65,8 @@ void AtomModel::loadData(int frames, string prefix)
 	//cout << "Load " << frame_num << " frames" << endl;
 	updateNeighbors(center_id, neighbor_radius);
 	path_prefix = prefix;
-	if (model_frames[0].group_map.count(center_id) == 0) {
-		center_id = model_frames[0].group_map.begin()->first;
+	if (atom3d.group_map.count(center_id) == 0) {
+		center_id = atom3d.group_map.begin()->first;
 	}
 	//check max frame amount
 	max_frame_num = frame_no;
@@ -82,11 +84,11 @@ void AtomModel::update()
 		cur_frame = (ofGetElapsedTimeMicros() / (1000000 / frame_rate) + init_frame) % frame_num;
 		// only update when current frame changed
 		if (cur_frame != last_frame) {
-			axis.update(model_frames[cur_frame].axis_length);
-			model_frames[cur_frame].group_map[center_id].update();
+			axis.update(atom3d.axis_length[cur_frame]);
+			atom3d.group_map[center_id].update(cur_frame);
 			int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
 			for (int i = 0; i < max_neighbors; i++) {
-				model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].update();
+				atom3d.group_map[frames_neighbor_id[cur_frame][i]].update(cur_frame);
 			}
 			//neighbor_id.clear();
 			//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(center_id);
@@ -98,7 +100,7 @@ void AtomModel::update()
 void AtomModel::draw() {
 	axis.draw();
 	// here you will draw your object
-	model_frames[cur_frame].group_map[center_id].draw(ofColor(148, 0, 211, 240));
+	atom3d.group_map[center_id].draw(ofColor(148, 0, 211, 240));
 	////mmp, neighbor_id may be size 0 when draw() called first time.
 
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
@@ -111,7 +113,7 @@ void AtomModel::draw() {
 		//rand_color.g = color.g + _rand_nums[(i + 1) % _rand_nums.size()] * ((color.g - 128 < 0) - 0.5);
 		//rand_color.b = color.b + _rand_nums[(i + 2) % _rand_nums.size()] * ((color.b - 128 < 0) - 0.5);
 
-		model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].draw(ofColor(color, opacity));
+		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(ofColor(color, opacity));
 	}
 }
 
@@ -122,7 +124,7 @@ void AtomModel::updateNeighbors(int _center_id, float _radius)
 	}
 	frames_neighbor_id.clear();
 	for (int i = 0; i < frame_num; i++) {
-		frames_neighbor_id.push_back(model_frames[i].get_neighbor_group_id(_center_id, _radius));
+		frames_neighbor_id.push_back(atom3d.get_neighbor_group_id(_center_id, _radius));
 	}
 }
 
@@ -140,8 +142,8 @@ void AtomModel::updateParams(int frame_rate_new, int opacity_new)
 
 float AtomModel::getAxisLength()
 {
-	if (model_frames.size() > 0) {
-		return model_frames[0].axis_length;
+	if (atom3d.frames > 0) {
+		return atom3d.axis_length[0];
 	}
 	else {
 		return 0.f;
@@ -177,7 +179,7 @@ void AtomModel::onCenterIdSlider(ofxDatGuiSliderEvent e)
 {
 	int id = e.target->getValue();
 	if (cur_frame >= 0) {
-		if (model_frames[cur_frame].group_map.count(id) == 1) {
+		if (atom3d.group_map.count(id) == 1) {
 			center_id = id;
 			updateNeighbors(center_id, neighbor_radius);
 		}

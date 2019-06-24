@@ -1,6 +1,5 @@
 #pragma once
 //#define DEBUG
-#include "atom_structure.h"
 #include "settings.h"
 #include "atom_model.h"
 

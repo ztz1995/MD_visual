@@ -127,11 +127,6 @@ Atom3D::Atom3D()
 {
 }
 
-Atom3D::Atom3D(string prefix, int frames) {
-	setup(prefix);
-	update(prefix, frames);
-}
-
 void Atom3D::setup(string prefix) {
 	int frame_no = 0;
 	char buf[100];
@@ -155,32 +150,43 @@ void Atom3D::setup(string prefix) {
 			append_atom(new_atom);
 		}
 	}
+	this->frames = 1;
 };
 
 void Atom3D::update(string prefix, int frames) {
-	for (int frame_no = 1; frame_no < frames; frame_no++) {
-		char buf[100];
-		sprintf_s(buf, "%03d.json", frame_no);
-		string filepath = prefix + string(buf);
-		ofJson atom_info;
-		if (!std::filesystem::exists(filepath)) {
-			ofLogNotice() << "file not exist: " << filepath;
-			throw filepath;
-		}
-		else {
-			ifstream in_file(filepath);
-			in_file >> atom_info;
-			//ofLogNotice() << "file loaded: " << fp;
-		}
-		axis_length.push_back(atom_info["length"]);
-		for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
-			if (it.key() != "length") {
-				ofJson atm_json = it.value();
-				int id = atm_json["id"], group_id = atm_json["group_id"];
-				group_map[group_id].atom_map[id].update(atm_json, axis_length[frame_no]);
+	if (frames > this->frames) {
+		int frame_no = this->frames;
+		for (frame_no; frame_no < frames; frame_no++) {
+			char buf[100];
+			sprintf_s(buf, "%03d.json", frame_no);
+			string filepath = prefix + string(buf);
+			ofJson atom_info;
+			if (std::filesystem::exists(filepath)) {
+				ifstream in_file(filepath);
+				in_file >> atom_info;
+				//ofLogNotice() << "file loaded: " << fp;
+				axis_length.push_back(atom_info["length"]);
+				for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
+					if (it.key() != "length") {
+						ofJson atm_json = it.value();
+						int id = atm_json["id"], group_id = atm_json["group_id"];
+						group_map[group_id].atom_map[id].update(atm_json, axis_length[frame_no]);
+					}
+				}
+			}
+			else {
+				ofLogNotice() << filepath << " File not exist! stop reading!";
+				break;
 			}
 		}
+		this->frames = frame_no;
 	}
+};
+
+void Atom3D::load_data(string prefix, int frames) {
+	if (this->frames == 0)
+		setup(prefix);
+	update(prefix, frames);
 };
 
 // Atom3D contains all the atom groups for one frame
@@ -193,10 +199,11 @@ void Atom3D::append_atom(Atom _atom) {
 		AtomGroup new_group(_atom.group_id, _atom.mole_id, _atom.group_type);
 		new_group.append_atom(_atom);
 		group_map.insert(make_pair(_atom.group_id, new_group));
+		max_group_id = max(max_group_id, _atom.group_id);
 	}
 }
 
-vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r, int cur_frame = 0) {
+vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r, int cur_frame) {
 	AtomGroup c_grp = this->group_map[center_group_id];
 	vector<float> distance;
 	vector<int> arg_vec;

@@ -70,7 +70,8 @@ void Settings::bindEventsToModel(AtomModel* model)
 	stopButton->onButtonEvent(model, &AtomModel::onStopButton);
 
 	modelDissolvedToggle->onToggleEvent(model, &AtomModel::onDissolvedToggle);
-	modelFrameNumSlider->onSliderEvent(model, &AtomModel::onFrameNumSlider);
+	// todo load data.
+	//modelFrameNumSlider->onSliderEvent(model, &AtomModel::onFrameNumSlider);
 	modelNeighborNumSlider->onSliderEvent(model, &AtomModel::onNeighborNumSlider);
 	modelCentIdSlider->onSliderEvent(model, &AtomModel::onCenterIdSlider);
 	modelRadiusSlider->onSliderEvent(model, &AtomModel::onNeighborRadiusSlider);

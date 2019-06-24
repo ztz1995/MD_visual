@@ -1,5 +1,5 @@
 #pragma once
-#include "atom_structure.h"
+#include "atom_structure_res.h"
 #include "settings.h"
 #include "MarchingCubes.h"
 
@@ -15,7 +15,8 @@ public:
 	void draw();
 	void update();
 	float getAxisLength();
-	vector<Atom3D> model_frames;
+	//vector<Atom3D> model_frames;
+	Atom3D atom3d;
 	vector<vector<int>> frames_neighbor_id;
 private:
 	//TODO: make neighbor_num ,colors and neighbor R tunable.

@@ -19,50 +19,6 @@ AtomModel::AtomModel(Settings* s)
 	//}
 }
 
-void AtomModel::setup(int frames, string prefix)
-{
-	loadData(frames, prefix);
-}
-
-void AtomModel::update()
-{
-	if (playing) {
-		cur_frame = (ofGetElapsedTimeMicros() / (1000000 / frame_rate) + init_frame) % frame_num;
-		// only update when current frame changed
-		if (cur_frame != last_frame) {
-			axis.update(model_frames[cur_frame].axis_length);
-			model_frames[cur_frame].group_map[center_id].update();
-			int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
-			for (int i = 0; i < max_neighbors; i++) {
-				model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].update();
-			}
-			//neighbor_id.clear();
-			//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(center_id);
-		}
-		last_frame = cur_frame;
-	}
-}
-
-void AtomModel::draw() {
-	axis.draw();
-	// here you will draw your object
-	model_frames[cur_frame].group_map[center_id].draw(ofColor(148, 0, 211, 240));
-	////mmp, neighbor_id may be size 0 when draw() called first time.
-
-	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
-	//ofColor rand_color = ofColor(0,0,0,opacity);
-	//float rand_max = 50.;
-	//ofSeedRandom(0);
-	for (int i = 0; i < max_neighbors; i++) {
-		// rand_max should limit to: rand_max<255
-		//rand_color.r = color.r + _rand_nums[i % _rand_nums.size()] * ((color.r - 128 < 0) - 0.5);
-		//rand_color.g = color.g + _rand_nums[(i + 1) % _rand_nums.size()] * ((color.g - 128 < 0) - 0.5);
-		//rand_color.b = color.b + _rand_nums[(i + 2) % _rand_nums.size()] * ((color.b - 128 < 0) - 0.5);
-
-		model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].draw(ofColor(color, opacity));
-	}
-}
-
 void AtomModel::loadData(int frames, string prefix)
 {
 	// all filepaths must be absolute or relative to bin/MD_visual_debug.exe
@@ -113,6 +69,50 @@ void AtomModel::loadData(int frames, string prefix)
 	//check max frame amount
 	max_frame_num = frame_no;
 	ofLogNotice() << "Total " << max_frame_num << " frames exist.";
+}
+
+void AtomModel::setup(int frames, string prefix)
+{
+	loadData(frames, prefix);
+}
+
+void AtomModel::update()
+{
+	if (playing) {
+		cur_frame = (ofGetElapsedTimeMicros() / (1000000 / frame_rate) + init_frame) % frame_num;
+		// only update when current frame changed
+		if (cur_frame != last_frame) {
+			axis.update(model_frames[cur_frame].axis_length);
+			model_frames[cur_frame].group_map[center_id].update();
+			int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
+			for (int i = 0; i < max_neighbors; i++) {
+				model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].update();
+			}
+			//neighbor_id.clear();
+			//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(center_id);
+		}
+		last_frame = cur_frame;
+	}
+}
+
+void AtomModel::draw() {
+	axis.draw();
+	// here you will draw your object
+	model_frames[cur_frame].group_map[center_id].draw(ofColor(148, 0, 211, 240));
+	////mmp, neighbor_id may be size 0 when draw() called first time.
+
+	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
+	//ofColor rand_color = ofColor(0,0,0,opacity);
+	//float rand_max = 50.;
+	//ofSeedRandom(0);
+	for (int i = 0; i < max_neighbors; i++) {
+		// rand_max should limit to: rand_max<255
+		//rand_color.r = color.r + _rand_nums[i % _rand_nums.size()] * ((color.r - 128 < 0) - 0.5);
+		//rand_color.g = color.g + _rand_nums[(i + 1) % _rand_nums.size()] * ((color.g - 128 < 0) - 0.5);
+		//rand_color.b = color.b + _rand_nums[(i + 2) % _rand_nums.size()] * ((color.b - 128 < 0) - 0.5);
+
+		model_frames[cur_frame].group_map[frames_neighbor_id[cur_frame][i]].draw(ofColor(color, opacity));
+	}
 }
 
 void AtomModel::updateNeighbors(int _center_id, float _radius)

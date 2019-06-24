@@ -2,7 +2,7 @@
 
 //#define DEBUG
 
-#include "atom_structure.h"
+#include "atom_structure_res.h"
 #include <cmath>
 
 // basic element
@@ -19,11 +19,17 @@ Atom::Atom(ofJson atm_js, float axis_length) {
 	this->group_type = group_type;
 	this->element = element;
 	// this->coordinate = ofVec3f((co[0] - axis_length / 2.)/100.+0.5, (co[1] - axis_length / 2.) / 100. + 0.5, (co[2] - axis_length / 2.) / 100. + 0.5);
-	this->coordinate = ofVec3f(co[0] - axis_length / 2., co[1] - axis_length / 2., co[2] - axis_length / 2.);
+	this->coordinate.push_back(ofVec3f(co[0] - axis_length / 2., co[1] - axis_length / 2., co[2] - axis_length / 2.));
 	this->f_e = f_e;
 	this->f_r = f_r;
 	this->charge = charge;
+	//if (this->element == "C")
 }
+
+void Atom::update(ofJson atm_js, float axis_length) {
+	vector<float> co = atm_js["coordinate"];
+	coordinate.push_back(ofVec3f(co[0] - axis_length / 2., co[1] - axis_length / 2., co[2] - axis_length / 2.));
+};
 
 // AtomGroup contains several atoms
 AtomGroup::AtomGroup() {}
@@ -43,12 +49,20 @@ void AtomGroup::append_atom(Atom _atom) {
 	}
 }
 
-void AtomGroup::update() {
-	if (!cal_iso) {
+void AtomGroup::update(int frame_no) {
+	if (!set_iso) {
+		//为什么把setup放在update里？？？
+		//即使用cal_iso判断了，也不应该把new的部分放在里面
+		iso.setup(32);
+		set_iso = TRUE;
+	}
+
+	if ((!cal_iso) || (cur_frame != frame_no)) {
+
 		ofVec3f max_co = { 0.,0.,0. };
 		ofVec3f dif = { 0.,0.,0. };
 		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-			dif = map_it->second.coordinate - get_center();
+			dif = map_it->second.coordinate[frame_no] - get_center(frame_no);
 			for (int i = 0; i < 3; i++) {
 				if (fabs(dif[i]) > max_co[i])
 					max_co = ofVec3f(fabs(dif[i]));
@@ -58,16 +72,15 @@ void AtomGroup::update() {
 		iso_scale = max_co * 2;
 		vector<ofPoint> centers;
 		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-			centers.push_back((map_it->second.coordinate - get_center() + max_co) / iso_scale);
+			centers.push_back((map_it->second.coordinate[frame_no] - get_center(frame_no) + max_co) / iso_scale);
 			//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
 		}
-		//为什么把setup放在update里？？？
-		//即使用cal_iso判断了，也不应该把new的部分放在里面
-		iso.setup(32);
+
 		this->iso.setCenters(centers);
 		this->iso.setRadius(1. / 16., 2. / 16.);
 		this->iso.update();
 		cal_iso = TRUE;
+		cur_frame = frame_no;
 	}
 };
 
@@ -80,7 +93,7 @@ void AtomGroup::draw(ofColor color) {
 	color.b = color.b + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5);
 
 	ofPushMatrix();
-	ofTranslate(get_center());
+	ofTranslate(get_center(cur_frame));
 	ofScale(iso_scale);
 	iso.draw(color);
 	ofPopMatrix();
@@ -94,30 +107,81 @@ void AtomGroup::draw(ofColor color) {
 #endif // DEBUG
 }
 
-ofVec3f AtomGroup::get_center() {
-	if (this->cal_center == FALSE) {
+ofVec3f AtomGroup::get_center(int frame_no) {
+	if (this->cal_center[frame_no] == FALSE) {
 #ifdef DEBUG
 		cout << "get center called" << endl;
 #endif // !DEBUG
 		ofVec3f _center = ofVec3f(0., 0., 0.);
 		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-			_center += map_it->second.coordinate;
+			_center += map_it->second.coordinate[frame_no];
 		}
 		_center /= this->atom_map.size();
-		this->center = _center;
-		this->cal_center = TRUE;
+		this->center[frame_no] = _center;
+		this->cal_center[frame_no] = TRUE;
 	}
-	return this->center;
+	return this->center[frame_no];
 }
 
 Atom3D::Atom3D()
 {
 }
 
-Atom3D::Atom3D(string fp)
-{
-	load_from_json(fp);
+Atom3D::Atom3D(string prefix, int frames) {
+	setup(prefix);
+	update(prefix, frames);
 }
+
+void Atom3D::setup(string prefix) {
+	int frame_no = 0;
+	char buf[100];
+	sprintf_s(buf, "%03d.json", frame_no);
+	string filepath = prefix + string(buf);
+	ofJson atom_info;
+	if (!std::filesystem::exists(filepath)) {
+		ofLogNotice() << "file not exist: " << filepath;
+		throw filepath;
+	}
+	else {
+		ifstream in_file(filepath);
+		in_file >> atom_info;
+		//ofLogNotice() << "file loaded: " << fp;
+	}
+	axis_length.push_back(atom_info["length"]);
+	for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
+		if (it.key() != "length") {
+			ofJson atm_json = it.value();
+			Atom new_atom(atm_json, axis_length[0]);
+			append_atom(new_atom);
+		}
+	}
+};
+
+void Atom3D::update(string prefix, int frames) {
+	for (int frame_no = 1; frame_no < frames; frame_no++) {
+		char buf[100];
+		sprintf_s(buf, "%03d.json", frame_no);
+		string filepath = prefix + string(buf);
+		ofJson atom_info;
+		if (!std::filesystem::exists(filepath)) {
+			ofLogNotice() << "file not exist: " << filepath;
+			throw filepath;
+		}
+		else {
+			ifstream in_file(filepath);
+			in_file >> atom_info;
+			//ofLogNotice() << "file loaded: " << fp;
+		}
+		axis_length.push_back(atom_info["length"]);
+		for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
+			if (it.key() != "length") {
+				ofJson atm_json = it.value();
+				int id = atm_json["id"], group_id = atm_json["group_id"];
+				group_map[group_id].atom_map[id].update(atm_json, axis_length[frame_no]);
+			}
+		}
+	}
+};
 
 // Atom3D contains all the atom groups for one frame
 void Atom3D::append_atom(Atom _atom) {
@@ -132,34 +196,13 @@ void Atom3D::append_atom(Atom _atom) {
 	}
 }
 
-void Atom3D::load_from_json(string fp) {
-	ofJson atom_info;
-	if (!std::filesystem::exists(fp)) {
-		ofLogNotice() << "file not exist: " << fp;
-		throw fp;
-	}
-	else {
-		ifstream in_file(fp);
-		in_file >> atom_info;
-		//ofLogNotice() << "file loaded: " << fp;
-	}
-	this->axis_length = atom_info["length"];
-	for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
-		if (it.key() != "length") {
-			ofJson atm_json = it.value();
-			Atom new_atom(atm_json, this->axis_length);
-			append_atom(new_atom);
-		}
-	}
-}
-
-vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r) {
+vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r, int cur_frame = 0) {
 	AtomGroup c_grp = this->group_map[center_group_id];
 	vector<float> distance;
 	vector<int> arg_vec;
 	for (auto it = this->group_map.begin(); it != this->group_map.end(); it++) {
 		if ((it->first != center_group_id) && (it->second.mole_id != c_grp.mole_id)) {
-			float _d = c_grp.get_center().distance(it->second.get_center());
+			float _d = c_grp.get_center(cur_frame).distance(it->second.get_center(cur_frame));
 			if (_d < r) {
 				distance.push_back(_d);
 				arg_vec.push_back(it->first);
@@ -242,7 +285,7 @@ float cal_elec(Atom atom1, Atom atom2, float r) {
 	return f_e;
 }
 
-float cal_frc(Atom atom1, Atom atom2) {
-	float r = atom1.coordinate.distance(atom2.coordinate);
+float cal_frc(Atom atom1, Atom atom2, int frame_no) {
+	float r = atom1.coordinate[frame_no].distance(atom2.coordinate[frame_no]);
 	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
 }

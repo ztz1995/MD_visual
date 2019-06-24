@@ -68,6 +68,7 @@ public:
 	vector<int> get_neighbor_group_id(const int center_group_id, float r = 15.f, int cur_frames = 0);
 
 private:
+	bool _draw_particle = TRUE;
 	vector<int> _arg_sort(vector<float> ivec, vector<int> arg_vec);
 };
 

@@ -7,9 +7,9 @@ particle::particle(ofPoint point)
 	acceleration.set(0, 0, 0); 
 	ofTime time = ofGetCurrentTime();
 	ofSeedRandom(time.getAsNanoseconds());
-	float x = ofRandom(-0.04, 0.04);
-	float y = ofRandom(-0.04, 0.04);
-	float z = ofRandom(-0.04, 0.04);
+	float x = ofRandom(-0.05, 0.05);
+	float y = ofRandom(-0.05, 0.05);
+	float z = ofRandom(-0.05, 0.05);
 
 	velocity.set(x, y, z);
 	location = point;
@@ -32,7 +32,7 @@ void particle::update() {
 
 void particle::display() {
 
-	ofColor color = ofColor(0, 0, 0, lifespan);
+	ofColor color = ofColor(166, 52, 169, lifespan);
 	//float rand_min = -5;
 	//float rand_max = 0;
 	//ofTime time = ofGetCurrentTime();

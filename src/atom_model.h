@@ -36,7 +36,7 @@ private:
 	void onCenterIdSlider(ofxDatGuiSliderEvent e);
 	int neighbor_num = 10;
 	void onNeighborNumSlider(ofxDatGuiSliderEvent e);
-	float neighbor_radius = 30.;
+	float neighbor_radius = 40.;
 	void onNeighborRadiusSlider(ofxDatGuiSliderEvent e);
 	bool fully_dissolved;
 	void onDissolvedToggle(ofxDatGuiToggleEvent e);

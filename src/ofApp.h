@@ -23,8 +23,15 @@ public:
 	void gotMessage(ofMessage msg);
 
 	ofEasyCam mycam;
-	ofLight light;
-	ofLight light2;
+	// light
+	ofLight pointLight;
+	ofLight spotLight;
+	ofLight directionalLight;
+	ofLight ambientLight;
+	//ofMaterial material;
+	ofColor lightColor;
+	ofColor materialColor;
+
 	Settings settings;
 	AtomModel* model;
 

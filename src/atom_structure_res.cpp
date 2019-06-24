@@ -51,7 +51,7 @@ void AtomGroup::append_atom(Atom _atom) {
 
 void AtomGroup::update(int frame_no) {
 	if (!set_iso) {
-		iso.setup(32);
+		iso.setup(64);
 		set_iso = TRUE;
 	}
 	ofVec3f max_co = { 0.,0.,0. };
@@ -65,13 +65,16 @@ void AtomGroup::update(int frame_no) {
 	}
 	max_co += 3;
 	iso_scale = max_co * 2;
+	//cout << iso_scale << endl;
 	vector<ofPoint> centers;
 	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-		centers.push_back((map_it->second.coordinate[frame_no] - get_center(frame_no) + max_co) / iso_scale);
-		//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
+		if (map_it->second.element != "H") {
+			centers.push_back((map_it->second.coordinate[frame_no] - get_center(frame_no) + max_co) / iso_scale);
+			//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
+		}
 	}
 	this->iso.setCenters(centers);
-	this->iso.setRadius(1. / 16., 2. / 16.);
+	this->iso.setRadius(0.8 / 16./iso_scale[0]*10., 1.6 / 16./iso_scale[0] * 10.);
 	this->iso.update();
 };
 
@@ -82,6 +85,18 @@ void AtomGroup::draw(int frame_no, ofColor color) {
 	color.r = color.r + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5);
 	color.g = color.g + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5);
 	color.b = color.b + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5);
+
+	// shininess is a value between 0 - 128, 128 being the most shiny //
+	ofMaterial material;
+	material.setShininess(120);
+	// the light highlight of the material //
+	material.setDiffuseColor(color);
+	material.setSpecularColor(color);
+	material.setAmbientColor(ofColor(255, 255, 255, 255));
+	// shininess is a value between 0 - 128, 128 being the most shiny //
+	material.setShininess(64);
+	material.begin();
+
 
 	ofPushMatrix();
 	ofTranslate(get_center(frame_no));
@@ -250,7 +265,15 @@ void Axis::update(float _l) {
 }
 
 void Axis::draw() {
-	ofSetColor(0);
+	ofMaterial material;
+	material.setShininess(120);
+	// the light highlight of the material //
+	material.setDiffuseColor(ofColor(255));
+	material.setSpecularColor(ofColor(255));
+	material.setAmbientColor(ofColor(255, 255, 255, 255));
+	// shininess is a value between 0 - 128, 128 being the most shiny //
+	material.setShininess(64);
+	material.begin();
 	for (int i_line = 0; i_line < 12; i_line++) {
 		line[i_line].draw();
 	}

@@ -23,20 +23,28 @@ public:
 	ofxDatGuiButton* stopButton;
 	//dissolve toggle
 	ofxDatGuiToggle* modelDissolvedToggle;
-	ofxDatGuiSlider* modelFrameNumSlider, * modelNeighborNumSlider, * modelCentIdSlider, * modelRadiusSlider;
+	ofxDatGuiSlider* modelFrameNumSlider, * modelNeighborNumSlider, * modelCenterIdSlider, * modelNeighborRadiusSlider;
 
 	//model frame rate
 	ofxDatGuiSlider* modelFrameRateSlider;
-	//model color&opacity
+	//model neighbor_color&opacity
 	ofxDatGuiSlider* modelOpacitySlider;
-	ofxDatGuiColorPicker* modelColorPicker;
+	ofxDatGuiColorPicker* modelCenterColorPicker,* modelNeighborColorPicker;
+	ofxDatGuiToggle* modelForceFieldToggle;
 	/*end model setting items*/
+	ofxDatGuiFolder* lightingFolder;
+	ofxDatGuiSlider* lightRotateX, * lightRotateY, * lightRotateZ;
+	ofVec3f getLightOrientation();
+
+	//shortcut button
+	ofxDatGuiLabel* hintLableShot, * hintLabelCamera;
 private:
 	//shared event handler
 	void onSliderEvent(ofxDatGuiSliderEvent e);
 	void onTextInputEvent(ofxDatGuiTextInputEvent e);
 	//for settings panel
 	ofxDatGuiFolder* infoBoard;
+	ofxDatGuiFRM* FRMonitor;
 	ofxDatGuiSlider* appFRSetter;
 	ofxDatGuiSlider* opacitySlider;
 	ofxDatGuiTextInput* scaleInput;
@@ -45,18 +53,22 @@ private:
 
 class PanelTheme :public ofxDatGuiThemeSmoke {
 public:
-	PanelTheme(float scale = 1.3) {
+	PanelTheme() {
 		_theme = ofxDatGuiThemeSmoke();
-		_scale = scale;
+		layout.upperCaseLabels = false;
+		_scale = 1.0;
 	}
 	void setScale(float scale) {
+		cout << "setScale " << _scale << " to " << scale << endl;
 		if (scale == _scale) {
+			cout << "same scale " << scale << ", skip" << endl;
 			return;
 		}
-		ofLogNotice() << "set panel scale: ";
+		ofLogNotice() << "set panel scale: " << scale;
+		_scale = scale;
 		font.size = _theme.font.size * scale * 1.2;
 		stripe.width = _theme.stripe.width * scale;
-		layout.width = _theme.layout.width * scale;
+		layout.width = _theme.layout.width * scale * 1.1;
 		layout.height = _theme.layout.height * scale;
 		layout.padding = _theme.layout.padding * scale;
 		layout.vMargin = _theme.layout.vMargin * scale;
@@ -75,8 +87,12 @@ public:
 
 		font.ptr = ofxSmartFont::add(font.file, font.size);
 	}
+
+	float getScale() {
+		return _scale;
+	}
 private:
 	// default theme
 	ofxDatGuiThemeSmoke _theme;
-	float _scale;
+	float _scale = 1.;
 };

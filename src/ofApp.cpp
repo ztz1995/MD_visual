@@ -11,30 +11,12 @@ void ofApp::setup() {
 
 	// turn on smooth lighting //
 	ofSetSmoothLighting(true);
-	// Point lights emit light in all directions //
-	// set the diffuse color, color reflected from the light source //
-	pointLight.setDiffuseColor(ofColor(255, 255, 255));
-
-	// specular color, the highlight/shininess color //
-	pointLight.setSpecularColor(ofColor(255.f, 255.f, 255.f));
-	pointLight.setPointLight();
-
-	// turn the light into spotLight, emit a cone of light //
-	spotLight.setSpotlight();
-	// size of the cone of emitted light, angle between light axis and side of cone //
-	// angle range between 0 - 90 in degrees //
-	spotLight.setSpotlightCutOff(50);
-	// rate of falloff, illumitation decreases as the angle from the cone axis increases //
-	// range 0 - 128, zero is even illumination, 128 is max falloff //
-	spotLight.setSpotConcentration(45);
 
 	// Directional Lights emit light based on their orientation, regardless of their position //
 	directionalLight.setDiffuseColor(ofColor(255, 255, 255));
-	directionalLight.setSpecularColor(ofColor(255.f, 255.f, 255.f));
+	directionalLight.setSpecularColor(ofColor(255, 255, 255));
 	directionalLight.setDirectional();
-	// set the direction of the light
-	// set it pointing from left to right -> //
-	directionalLight.setOrientation(ofVec3f(0, 90, 0));
+	directionalLight.setParent(mycam,true);
 
 	mycam.setDistance(model->getAxisLength() * 2);
 	ofResetElapsedTimeCounter();
@@ -50,26 +32,23 @@ void ofApp::update() {
 	}
 	model->update();
 	settings.update();
-	
+	// dirction x-right,y-up,z-camera/depth,(0,0,0)
+	directionalLight.setOrientation(settings.getLightOrientation());
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofEnableDepthTest();
-	ofBackgroundGradient(ofColor::white, ofColor::gray);
+	ofBackgroundGradient(ofColor::white, ofColor::dimGray);
 
 	// enable lighting //
 	ofEnableLighting();
-	pointLight.enable();
-	spotLight.enable();
 	directionalLight.enable();
-
+	
 	mycam.begin();
 	model->draw();
 	mycam.end();
 
-	pointLight.disable();
-	spotLight.disable();
 	directionalLight.disable();
 	ofDisableLighting();
 	//end light and model drawing

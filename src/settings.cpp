@@ -9,7 +9,7 @@ Settings::Settings() {
 	gui = new ofxDatGui();
 }
 void Settings::setup() {
-	gui->setAutoDraw(FALSE);
+	gui->setAutoDraw(false);
 	gui->addHeader("Setting Panel");
 	gui->addFooter();
 	gui->getFooter()->setLabelWhenExpanded("Setting Panel - CLOSE");
@@ -59,7 +59,11 @@ void Settings::setup() {
 
 }
 void Settings::update() {
+	gui->update();
+}
 
+void Settings::draw() {
+	gui->draw();
 }
 
 void Settings::bindEventsToModel(AtomModel* model)

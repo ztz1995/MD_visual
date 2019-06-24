@@ -12,6 +12,7 @@ public:
 	PanelTheme* theme;
 	void setup();
 	void update();
+	void draw();
 	/*model setting items*/
 	ofxDatGuiFolder* modelFolder;
 	void bindEventsToModel(AtomModel* model);

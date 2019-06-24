@@ -42,21 +42,21 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	//if (settings.gui->getMouseDown()) {
-	//	mycam.disableMouseInput();
-	//}
-	//else {
-	//	mycam.enableMouseInput();
-	//}
+	if (settings.gui->getMouseDown()) {
+		mycam.disableMouseInput();
+	}
+	else {
+		mycam.enableMouseInput();
+	}
 	model->update();
 	settings.update();
+	
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofEnableDepthTest();
 	ofBackgroundGradient(ofColor::white, ofColor::gray);
-	ofEnableDepthTest();
 
 	// enable lighting //
 	ofEnableLighting();
@@ -65,21 +65,16 @@ void ofApp::draw() {
 	directionalLight.enable();
 
 	mycam.begin();
-
 	model->draw();
-
 	mycam.end();
 
 	pointLight.disable();
 	spotLight.disable();
 	directionalLight.disable();
 	ofDisableLighting();
-
-	//mycam.begin();
-	settings.gui->draw();
-	//mycam.end();
-
+	//end light and model drawing
 	ofDisableDepthTest();
+	settings.draw();
 }
 
 //--------------------------------------------------------------

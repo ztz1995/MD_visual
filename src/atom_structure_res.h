@@ -23,7 +23,6 @@ public:
 class AtomGroup {
 public:
 	int group_id = 0, mole_id = 0;
-	int cur_frame = -1;
 	string group_type = "";
 	map<int, Atom> atom_map;
 
@@ -32,14 +31,14 @@ public:
 	void append_atom(Atom _atom);
 
 	void update(int frame_no);
-	void draw(ofColor color = ofColor(3, 168, 158, 240));
+	void draw(int frame_no, ofColor color = ofColor(3, 168, 158, 240));
 
 	ofVec3f get_center(int cur_frame);
 
 private:
 	MarchingCubes iso;
 	bool set_iso = FALSE;
-	bool cal_iso = FALSE;
+	//bool cal_iso = FALSE;
 	ofVec3f iso_scale;
 
 	bool cal_center[1000] = { FALSE };

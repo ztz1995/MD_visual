@@ -51,40 +51,31 @@ void AtomGroup::append_atom(Atom _atom) {
 
 void AtomGroup::update(int frame_no) {
 	if (!set_iso) {
-		//为什么把setup放在update里？？？
-		//即使用cal_iso判断了，也不应该把new的部分放在里面
 		iso.setup(32);
 		set_iso = TRUE;
 	}
-
-	if ((!cal_iso) || (cur_frame != frame_no)) {
-
-		ofVec3f max_co = { 0.,0.,0. };
-		ofVec3f dif = { 0.,0.,0. };
-		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-			dif = map_it->second.coordinate[frame_no] - get_center(frame_no);
-			for (int i = 0; i < 3; i++) {
-				if (fabs(dif[i]) > max_co[i])
-					max_co = ofVec3f(fabs(dif[i]));
-			}
+	ofVec3f max_co = { 0.,0.,0. };
+	ofVec3f dif = { 0.,0.,0. };
+	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+		dif = map_it->second.coordinate[frame_no] - get_center(frame_no);
+		for (int i = 0; i < 3; i++) {
+			if (fabs(dif[i]) > max_co[i])
+				max_co = ofVec3f(fabs(dif[i]));
 		}
-		max_co += 3;
-		iso_scale = max_co * 2;
-		vector<ofPoint> centers;
-		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-			centers.push_back((map_it->second.coordinate[frame_no] - get_center(frame_no) + max_co) / iso_scale);
-			//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
-		}
-
-		this->iso.setCenters(centers);
-		this->iso.setRadius(1. / 16., 2. / 16.);
-		this->iso.update();
-		cal_iso = TRUE;
-		cur_frame = frame_no;
 	}
+	max_co += 3;
+	iso_scale = max_co * 2;
+	vector<ofPoint> centers;
+	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
+		centers.push_back((map_it->second.coordinate[frame_no] - get_center(frame_no) + max_co) / iso_scale);
+		//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
+	}
+	this->iso.setCenters(centers);
+	this->iso.setRadius(1. / 16., 2. / 16.);
+	this->iso.update();
 };
 
-void AtomGroup::draw(ofColor color) {
+void AtomGroup::draw(int frame_no, ofColor color) {
 	float rand_max = 100;
 	ofSeedRandom(group_id);
 	//rand_max should limit to: rand_max<255
@@ -93,7 +84,7 @@ void AtomGroup::draw(ofColor color) {
 	color.b = color.b + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5);
 
 	ofPushMatrix();
-	ofTranslate(get_center(cur_frame));
+	ofTranslate(get_center(frame_no));
 	ofScale(iso_scale);
 	iso.draw(color);
 	ofPopMatrix();
@@ -204,7 +195,7 @@ void Atom3D::append_atom(Atom _atom) {
 }
 
 vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r, int cur_frame) {
-	AtomGroup c_grp = this->group_map[center_group_id];
+	AtomGroup & c_grp = this->group_map[center_group_id];
 	vector<float> distance;
 	vector<int> arg_vec;
 	for (auto it = this->group_map.begin(); it != this->group_map.end(); it++) {

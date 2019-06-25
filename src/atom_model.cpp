@@ -2,21 +2,39 @@
 
 AtomModel::AtomModel(Settings* s)
 {
+	/* initial all paramters from settings
+	int frame_num, int center_id, int neighbor_num, int neighbor_radius, 
+	int frame_rate, int opacity, ofColor center_color, neighbor_color,
+	bool forcefield_toggle,
+
+	bool fully_dissolved?, 
+	*/
 	if (s != NULL) {
-		fully_dissolved = s->modelDissolvedToggle->getChecked();
+		frame_num = s->modelFrameNumSlider->getValue();
+		center_id = s->modelCenterIdSlider->getValue();
+		neighbor_num = s->modelNeighborNumSlider->getValue();
+		neighbor_radius = s->modelNeighborRadiusSlider->getValue();
 		frame_rate = s->modelFrameRateSlider->getValue();
 		opacity = s->modelOpacitySlider->getValue();
-		color = s->modelColorPicker->getColor();
+		center_color = s->modelCenterColorPicker->getColor();
+		neighbor_color = s->modelNeighborColorPicker->getColor();
+		forcefield_toggle = s->modelForceFieldToggle->getChecked();
+		//not used.
+		fully_dissolved = s->modelDissolvedToggle->getChecked();
 	}
 	else {
-		fully_dissolved = false;
+		frame_num = 1;
+		center_id = 0;
+		neighbor_num = 10;
+		neighbor_radius = 20;
 		frame_rate = 1;
-		opacity = 60;
-		color = ofColor(3, 168, 158);
+		opacity = 255;
+		center_color = ofColor(148, 0, 211);
+		neighbor_color = ofColor(3, 168, 158);
+		forcefield_toggle = false;
+		//not used.
+		fully_dissolved = false;
 	}
-	//for (int i = 0; i < 200; i++) {
-	//	_rand_nums.push_back(ofRandom(100));
-	//}
 }
 
 void AtomModel::loadData(int frames, string prefix)
@@ -78,13 +96,14 @@ void AtomModel::setup(int frames, string prefix)
 	loadData(frames, prefix);
 }
 
-void AtomModel::update()
+void AtomModel::update(bool force)
 {
-	if (playing) {
+	//cout << "update AtomModel... cur_frame=" << cur_frame << endl;
+	if (playing || force) {
 		cur_frame = (ofGetElapsedTimeMicros() / (1000000 / frame_rate) + init_frame) % frame_num;
 		//cout << "update: " << cur_frame << endl;
 		// only update when current frame changed
-		if (cur_frame != last_frame) {
+		if (cur_frame != last_frame||force) {
 			axis.update(atom3d.axis_length[cur_frame]);
 			atom3d.group_map[center_id].update(cur_frame);
 			int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
@@ -99,34 +118,31 @@ void AtomModel::update()
 		}
 		last_frame = cur_frame;
 	}
-	atom3d.update_particle();
+	//when show forcefield, it should always be drawn even if paused,
+	if (forcefield_toggle) {
+		//cout << "updating particles" << endl;
+		atom3d.update_particle();
+	}
 }
 
 void AtomModel::draw() {
-	//cout << "draw  : " << cur_frame << endl;
-
+	//cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
+	if (cur_frame < 0) {
+		update(true);
+	}
 	axis.draw();
 	// here you will draw your object
-
-	atom3d.group_map[center_id].draw(cur_frame, ofColor(148, 0, 211, 240));
-
-	////mmp, neighbor_id may be size 0 when draw() called first time.
-
+	atom3d.group_map[center_id].draw(cur_frame, ofColor(center_color, opacity));
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
-	//ofColor rand_color = ofColor(0,0,0,opacity);
-	//float rand_max = 50.;
-	//ofSeedRandom(0);
 	for (int i = 0; i < max_neighbors; i++) {
-		// rand_max should limit to: rand_max<255
-		//rand_color.r = color.r + _rand_nums[i % _rand_nums.size()] * ((color.r - 128 < 0) - 0.5);
-		//rand_color.g = color.g + _rand_nums[(i + 1) % _rand_nums.size()] * ((color.g - 128 < 0) - 0.5);
-		//rand_color.b = color.b + _rand_nums[(i + 2) % _rand_nums.size()] * ((color.b - 128 < 0) - 0.5);
-
-		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(cur_frame, ofColor(color, opacity));
+		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(cur_frame, ofColor(neighbor_color, opacity));
 	}
 
 	//draw particle system
-	atom3d.draw_particle();
+	if (forcefield_toggle && !playing) {
+		//cout << "drawing particles" << endl;
+		atom3d.draw_particle();
+	}
 }
 
 void AtomModel::updateNeighbors(int _center_id, float _radius)
@@ -194,12 +210,14 @@ void AtomModel::onCenterIdSlider(ofxDatGuiSliderEvent e)
 		if (atom3d.group_map.count(id) == 1) {
 			center_id = id;
 			updateNeighbors(center_id, neighbor_radius);
+			cout << "center_id changed, set cur_frame " << cur_frame << " to -1." << endl;
+			cur_frame = -1;
 		}
-		//else if (center_id >= 0) {
-		//	// has been set before
-		//	e.target->setValue(center_id);
-		//	cout << "reset center_id from " << id << " to " << center_id << endl;
-		//}
+		else if (center_id >= 0) {
+			// has been set before
+			e.target->setValue(center_id);
+			cout << "reset center_id from " << id << " to " << center_id << endl;
+		}
 	}
 }
 
@@ -237,8 +255,20 @@ void AtomModel::onOpacitySlider(ofxDatGuiSliderEvent e)
 	ofLogNotice() << "Model opacity: " << opacity;
 }
 
-void AtomModel::onColorPicker(ofxDatGuiColorPickerEvent e)
+void AtomModel::onCenterColorPicker(ofxDatGuiColorPickerEvent e)
 {
-	color = e.target->getColor();
-	ofLogNotice() << "Model color: " << color;
+	center_color = e.target->getColor();
+	ofLogNotice() << "Model center_color: " << center_color;
+}
+
+void AtomModel::onNeighborColorPicker(ofxDatGuiColorPickerEvent e)
+{
+	neighbor_color = e.target->getColor();
+	ofLogNotice() << "Model neighbor_color: " << neighbor_color;
+}
+
+void AtomModel::onForceFieldToggle(ofxDatGuiToggleEvent e)
+{
+	forcefield_toggle = e.target->getChecked();
+	onPauseButton();
 }

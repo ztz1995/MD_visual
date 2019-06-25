@@ -25,13 +25,13 @@ public:
 
 	ofEasyCam mycam;
 	// light
-	ofLight pointLight;
-	ofLight spotLight;
+	//ofLight pointLight;
+	//ofLight spotLight;
 	ofLight directionalLight;
 	ofLight ambientLight;
 	//ofMaterial material;
-	ofColor lightColor;
-	ofColor materialColor;
+	//ofColor lightColor;
+	//ofColor materialColor;
 
 	Settings settings;
 	AtomModel* model;

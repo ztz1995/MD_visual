@@ -377,7 +377,7 @@ MarchingCubes::~MarchingCubes()
 	HEAP[MD_visual_debug.exe]: Invalid address specified to RtlValidateHeap( 01050000, 0CFE5388 )
 	MD_visual_debug.exe has triggered a breakpoint.
 	*/
-	cout << "MarchingCubes destructor not finished!" << endl;
+	//cout << "MarchingCubes destructor not finished!" << endl;
 	return;
 	if (m_pOpenVoxels != NULL) {
 		ofLogNotice() << "~MarchingCubes: m_pOpe...=" << m_pOpenVoxels;
@@ -518,6 +518,17 @@ void MarchingCubes::update()
 			}
 		}
 	}
+}
+
+void MarchingCubes::draw(ofColor color) {
+	ofSetColor(255);
+	glEnable(GL_DEPTH_TEST);
+	ofTranslate(-.5, -.5, -.5);
+	//ofSetColor(0);
+	//mesh.draw();
+	ofSetColor(color);
+	glDepthFunc(GL_LEQUAL);
+	mesh.drawFaces();
 }
 
 void MarchingCubes::AddNeighborsToList(int nCase, int x, int y, int z)
@@ -823,16 +834,7 @@ inline void MarchingCubes::SetGridVoxelInList(int x, int y, int z)
 		z * m_nGridSize * m_nGridSize] = 2;
 }
 
-void MarchingCubes::draw(ofColor color) {
-	ofSetColor(255);
-	glEnable(GL_DEPTH_TEST);
-	ofTranslate(-.5, -.5, -.5);
-	//ofSetColor(0);
-	//mesh.draw();
-	ofSetColor(color);
-	glDepthFunc(GL_LEQUAL);
-	mesh.drawFaces();
-}
+
 
 const ofMesh& MarchingCubes::getMesh() const {
 	return mesh;

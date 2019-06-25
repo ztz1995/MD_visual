@@ -13,7 +13,7 @@ public:
 	void updateNeighbors(int center_id, float radius = -1.);
 	void updateParams(int fr = -1, int opacity = -1);
 	void draw();
-	void update();
+	void update(bool force=false);
 	float getAxisLength();
 	//vector<Atom3D> model_frames;
 	Atom3D atom3d;
@@ -21,9 +21,9 @@ public:
 private:
 	//TODO: make neighbor_num ,colors and neighbor R tunable.
 	bool playing = true;
-	void onPlayButton(ofxDatGuiButtonEvent e);
-	void onPauseButton(ofxDatGuiButtonEvent e);
-	void onStopButton(ofxDatGuiButtonEvent e);
+	void onPlayButton(ofxDatGuiButtonEvent e = NULL);
+	void onPauseButton(ofxDatGuiButtonEvent e = NULL);
+	void onStopButton(ofxDatGuiButtonEvent e = NULL);
 	// data params: prefix
 	string path_prefix;
 	int cur_frame = 0, init_frame = 0, last_frame = -1;
@@ -38,14 +38,17 @@ private:
 	void onNeighborNumSlider(ofxDatGuiSliderEvent e);
 	float neighbor_radius = 40.;
 	void onNeighborRadiusSlider(ofxDatGuiSliderEvent e);
-	bool fully_dissolved;
-	void onDissolvedToggle(ofxDatGuiToggleEvent e);
 	int frame_rate;
 	void onFrameRateSlider(ofxDatGuiSliderEvent e);
 	int opacity;
 	void onOpacitySlider(ofxDatGuiSliderEvent e);
-	ofColor color;
-	void onColorPicker(ofxDatGuiColorPickerEvent e);
-
+	ofColor center_color;
+	void onCenterColorPicker(ofxDatGuiColorPickerEvent e);
+	ofColor neighbor_color;
+	void onNeighborColorPicker(ofxDatGuiColorPickerEvent e);
+	bool forcefield_toggle;
+	void onForceFieldToggle(ofxDatGuiToggleEvent e);
+	bool fully_dissolved;//not used?
+	void onDissolvedToggle(ofxDatGuiToggleEvent e);
 	//vector<float> _rand_nums;
 };

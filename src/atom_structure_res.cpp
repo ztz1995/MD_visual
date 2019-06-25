@@ -79,12 +79,41 @@ void AtomGroup::update(int frame_no) {
 };
 
 void AtomGroup::draw(int frame_no, ofColor color) {
+	ofColor self_color;
+	if (group_type == "TO") {
+		self_color = ofColor::yellow;
+	}
+	else {
+		if (group_type == "U") {
+			self_color = ofColor::purple;
+		}
+		else {
+			if (group_type == "Ph"|| group_type == "B") {
+				self_color = ofColor::blue;
+			}
+			else {
+				if (group_type == "Es") {
+					self_color = ofColor::turquoise;
+				}
+				else {
+					self_color = color;
+					cout << group_type << endl;
+				}
+			}
+		}
+	}
 	float rand_max = 100;
 	ofSeedRandom(group_id);
+
+	double op = color.a;
 	//rand_max should limit to: rand_max<255
-	color.r = color.r + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5);
-	color.g = color.g + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5);
-	color.b = color.b + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5);
+	//color.r = (color.r*2. + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5) + self_color.r) / 3;
+	//color.g = (color.g*2. + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5) + self_color.g) / 3;
+	//color.b = (color.b*2. + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5) + self_color.b) / 3;
+	color.r = (color.r * op + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5) + self_color.r*64.) / (64. + op);
+	color.g = (color.g * op + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5) + self_color.g*64.) / (64. + op);
+	color.b = (color.b * op + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5) + self_color.b*64.) / (64. + op);
+	color.a = 255;
 
 	// shininess is a value between 0 - 128, 128 being the most shiny //
 	ofMaterial material;
@@ -270,7 +299,7 @@ void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id)
 						}
 					}
 				}
-				ps.push_back(new particleSystem(c_atm.coordinate[cur_frame], force * 5));
+				ps.push_back(new particleSystem(c_atm.coordinate[cur_frame], force * 2));
 				//cout << force*10 << endl;
 				atom_num++;
 			}

@@ -29,7 +29,7 @@ void Settings::setup() {
 	modelFolder = gui->addFolder("Model Settings", ofColor::green);
 	modelFrameNumSlider = modelFolder->addSlider("  Frames", 1, 20, 5);
 	modelFrameNumSlider->setPrecision(0);
-	modelCenterIdSlider = modelFolder->addSlider("  Center id", 0, 250, 29);
+	modelCenterIdSlider = modelFolder->addSlider("  Center id", 0, 250, 137);
 	modelCenterIdSlider->setPrecision(0);
 	modelNeighborNumSlider = modelFolder->addSlider("  Neighbor num", 0, 20, 8);
 	modelNeighborNumSlider->setPrecision(0);
@@ -39,7 +39,7 @@ void Settings::setup() {
 	modelFrameRateSlider->setPrecision(0);
 	// change for Opacity to Color mixing
 	//modelOpacitySlider = modelFolder->addSlider("  Opacity", 0, 255, 255);
-	modelOpacitySlider = modelFolder->addSlider("  Color mixing", 0, 255, 255);
+	modelOpacitySlider = modelFolder->addSlider("  Color mixing", 0, 255, 20);
 	modelOpacitySlider->setPrecision(0);
 	modelCenterColorPicker = modelFolder->addColorPicker("  Center color", ofColor(148, 0, 211));
 	modelNeighborColorPicker = modelFolder->addColorPicker("  Primary color", ofColor(3, 168, 158));

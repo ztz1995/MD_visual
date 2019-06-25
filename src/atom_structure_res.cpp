@@ -277,8 +277,9 @@ vector<int> Atom3D::_arg_sort(vector<float> ivec, vector<int> arg_vec) {
 //	}
 //};
 
-void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id) {
+void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id, int neighbor_num) {
 	if (_draw_particle) {
+		/*cout << neighbor_id.size() << endl;*/
 		// update atom coordinate
 		ps.clear();
 		AtomGroup& ct_grp = group_map[cent_id];
@@ -287,13 +288,14 @@ void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id)
 			Atom& c_atm = c_it->second;
 			if (c_atm.element != "H") {
 				ofVec3f force = { 0.,0.,0. };
-				for (int _n = 0; _n < neighbor_id.size(); _n++) {
+				int max_neighbors = min(int(neighbor_id.size()), neighbor_num);
+				for (int _n = 0; _n < max_neighbors; _n++) {
 					int n_id = neighbor_id[_n];
 					AtomGroup& n_grp = group_map[n_id];
 					for (auto n_it = n_grp.atom_map.begin(); n_it != n_grp.atom_map.end(); n_it++) {
 						Atom& n_atm = n_it->second;
 						float distance = c_atm.coordinate[cur_frame].distance(n_atm.coordinate[cur_frame]);
-						if (distance > 6.) {
+						if (distance>6.) {
 							ofVec3f direction = (c_atm.coordinate[cur_frame] - n_atm.coordinate[cur_frame]).normalize();
 							force += direction * cal_frc(c_atm, n_atm, cur_frame);
 						}

@@ -19,8 +19,11 @@ public:
 	Atom3D atom3d;
 	vector<vector<int>> frames_neighbor_id;
 private:
+	//neighbor changed, used for force cal
+	bool frc_neighbor_changed = false;
+
 	//TODO: make neighbor_num ,colors and neighbor R tunable.
-	bool playing = true;
+	bool playing = false;
 	void onPlayButton(ofxDatGuiButtonEvent e = NULL);
 	void onPauseButton(ofxDatGuiButtonEvent e = NULL);
 	void onStopButton(ofxDatGuiButtonEvent e = NULL);

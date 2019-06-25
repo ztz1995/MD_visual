@@ -61,7 +61,7 @@ public:
 	void load_data(string prefix, int frames);
 
 	vector<particleSystem*> ps;
-	void setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id);
+	void setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id, int neighbor_num);
 	void update_particle();
 	void draw_particle();
 

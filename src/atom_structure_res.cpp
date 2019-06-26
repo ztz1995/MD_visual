@@ -1,13 +1,9 @@
 #pragma once
 
-//#define DEBUG
-
 #include "atom_structure_res.h"
 #include <cmath>
 
 // basic element
-Atom::Atom() {}
-
 Atom::Atom(ofJson atm_js, float axis_length) {
 	int id = atm_js["id"], group_id = atm_js["group_id"], mole_id = atm_js["mole_id"];
 	string group_type = atm_js["group_type"], element = atm_js["element"];
@@ -18,12 +14,10 @@ Atom::Atom(ofJson atm_js, float axis_length) {
 	this->group_id = group_id;
 	this->group_type = group_type;
 	this->element = element;
-	// this->coordinate = ofVec3f((co[0] - axis_length / 2.)/100.+0.5, (co[1] - axis_length / 2.) / 100. + 0.5, (co[2] - axis_length / 2.) / 100. + 0.5);
 	this->coordinate.push_back(ofVec3f(co[0] - axis_length / 2., co[1] - axis_length / 2., co[2] - axis_length / 2.));
 	this->f_e = f_e;
 	this->f_r = f_r;
 	this->charge = charge;
-	//if (this->element == "C")
 }
 
 void Atom::update(ofJson atm_js, float axis_length) {
@@ -32,8 +26,6 @@ void Atom::update(ofJson atm_js, float axis_length) {
 };
 
 // AtomGroup contains several atoms
-AtomGroup::AtomGroup() {}
-
 AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type) {
 	this->group_id = _group_id;
 	this->mole_id = _mole_id;
@@ -74,7 +66,7 @@ void AtomGroup::update(int frame_no) {
 		}
 	}
 	this->iso.setCenters(centers);
-	this->iso.setRadius(0.8 / 16./iso_scale[0]*10., 1.6 / 16./iso_scale[0] * 10.);
+	this->iso.setRadius(0.8 / 16. / iso_scale[0] * 10., 1.6 / 16. / iso_scale[0] * 10.);
 	this->iso.update();
 };
 
@@ -88,7 +80,7 @@ void AtomGroup::draw(int frame_no, ofColor color) {
 			self_color = ofColor::purple;
 		}
 		else {
-			if (group_type == "Ph"|| group_type == "B") {
+			if (group_type == "Ph" || group_type == "B") {
 				self_color = ofColor::blue;
 			}
 			else {
@@ -110,9 +102,9 @@ void AtomGroup::draw(int frame_no, ofColor color) {
 	//color.r = (color.r*2. + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5) + self_color.r) / 3;
 	//color.g = (color.g*2. + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5) + self_color.g) / 3;
 	//color.b = (color.b*2. + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5) + self_color.b) / 3;
-	color.r = (color.r * op + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5) + self_color.r*64.) / (64. + op);
-	color.g = (color.g * op + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5) + self_color.g*64.) / (64. + op);
-	color.b = (color.b * op + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5) + self_color.b*64.) / (64. + op);
+	color.r = (color.r * op + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5) + self_color.r * 64.) / (64. + op);
+	color.g = (color.g * op + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5) + self_color.g * 64.) / (64. + op);
+	color.b = (color.b * op + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5) + self_color.b * 64.) / (64. + op);
 	color.a = 255;
 
 	// shininess is a value between 0 - 128, 128 being the most shiny //
@@ -156,10 +148,6 @@ ofVec3f AtomGroup::get_center(int frame_no) {
 		this->cal_center[frame_no] = TRUE;
 	}
 	return this->center[frame_no];
-}
-
-Atom3D::Atom3D()
-{
 }
 
 void Atom3D::setup(string prefix) {
@@ -239,7 +227,7 @@ void Atom3D::append_atom(Atom _atom) {
 }
 
 vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r, int cur_frame) {
-	AtomGroup & c_grp = this->group_map[center_group_id];
+	AtomGroup& c_grp = this->group_map[center_group_id];
 	vector<float> distance;
 	vector<int> arg_vec;
 	for (auto it = this->group_map.begin(); it != this->group_map.end(); it++) {
@@ -268,15 +256,6 @@ vector<int> Atom3D::_arg_sort(vector<float> ivec, vector<int> arg_vec) {
 	return arg_vec;
 }
 
-//void Atom3D::setup_particle(int cent_id) {
-//	AtomGroup & ct_grpz = group_map[cent_id];
-//	for (auto map_it = ct_grpz.atom_map.begin(); map_it != ct_grpz.atom_map.end(); map_it++) {
-//		if (map_it->second.element != "H") {
-//			ps.push_back(particleSystem(map_it->second.coordinate[0]));
-//		}
-//	}
-//};
-
 void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id, int neighbor_num) {
 	if (_draw_particle) {
 		/*cout << neighbor_id.size() << endl;*/
@@ -295,7 +274,7 @@ void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id,
 					for (auto n_it = n_grp.atom_map.begin(); n_it != n_grp.atom_map.end(); n_it++) {
 						Atom& n_atm = n_it->second;
 						float distance = c_atm.coordinate[cur_frame].distance(n_atm.coordinate[cur_frame]);
-						if (distance>6.) {
+						if (distance > 6.) {
 							ofVec3f direction = (c_atm.coordinate[cur_frame] - n_atm.coordinate[cur_frame]).normalize();
 							force += direction * cal_frc(c_atm, n_atm, cur_frame);
 						}
@@ -318,7 +297,6 @@ void Atom3D::update_particle() {
 	}
 };
 
-
 void Atom3D::draw_particle() {
 	if (_draw_particle) {
 		for (int i = 0; i < ps.size(); i++) {
@@ -327,7 +305,31 @@ void Atom3D::draw_particle() {
 	}
 };
 
-// Axis implement
+float Atom3D::cal_vdw(Atom atom1, Atom atom2, float r) {
+	float r_i = atom1.f_r, r_j = atom2.f_r;
+	float f_v = 0.;
+	if (r < 9.5) {
+		float r_ij = pow((pow(r_i, 6) + pow(r_j, 6) / 2), 1 / 6);
+		float f_e = 2 * sqrt(atom1.f_e * atom2.f_e) / pow(r_i, 3) / pow(r_j, 3);
+		f_v = 18 * f_e / r_ij * (pow((r_ij / r), 10) - pow((r_ij / r), 7));
+	}
+	return f_v;
+}
+
+float Atom3D::cal_elec(Atom atom1, Atom atom2, float r) {
+	float f_e = 0.;
+	if (r < 9.5) {
+		f_e = atom1.charge * atom2.charge / r / r;
+	}
+	return f_e;
+}
+
+float Atom3D::cal_frc(Atom atom1, Atom atom2, int frame_no) {
+	float r = atom1.coordinate[frame_no].distance(atom2.coordinate[frame_no]);
+	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
+}
+
+// Axis implement, can use ofbox instead
 Axis::Axis() {
 	length = 300.0;
 }
@@ -373,29 +375,4 @@ void Axis::draw(ofColor color) {
 	for (int i_line = 0; i_line < 12; i_line++) {
 		line[i_line].draw();
 	}
-}
-
-
-float cal_vdw(Atom atom1, Atom atom2, float r) {
-	float r_i = atom1.f_r, r_j = atom2.f_r;
-	float f_v = 0.;
-	if (r < 9.5) {
-		float r_ij = pow((pow(r_i, 6) + pow(r_j, 6) / 2), 1 / 6);
-		float f_e = 2 * sqrt(atom1.f_e * atom2.f_e) / pow(r_i, 3) / pow(r_j, 3);
-		f_v = 18 * f_e / r_ij * (pow((r_ij / r), 10) - pow((r_ij / r), 7));
-	}
-	return f_v;
-}
-
-float cal_elec(Atom atom1, Atom atom2, float r) {
-	float f_e = 0.;
-	if (r < 9.5) {
-		f_e = atom1.charge * atom2.charge / r / r;
-	}
-	return f_e;
-}
-
-float cal_frc(Atom atom1, Atom atom2, int frame_no) {
-	float r = atom1.coordinate[frame_no].distance(atom2.coordinate[frame_no]);
-	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
 }

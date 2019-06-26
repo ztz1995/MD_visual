@@ -3,11 +3,11 @@
 AtomModel::AtomModel(Settings* s)
 {
 	/* initial all paramters from settings
-	int frame_num, int center_id, int neighbor_num, int neighbor_radius, 
+	int frame_num, int center_id, int neighbor_num, int neighbor_radius,
 	int frame_rate, int opacity, ofColor center_color, neighbor_color,
 	bool forcefield_toggle,
 
-	bool fully_dissolved?, 
+	bool fully_dissolved?,
 	*/
 	if (s != NULL) {
 		frame_num = s->modelFrameNumSlider->getValue();
@@ -135,7 +135,7 @@ void AtomModel::update()
 }
 
 void AtomModel::draw() {
-	cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
+	//cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
 	axis.draw();
 	// here you will draw your object
 	atom3d.group_map[center_id].draw(cur_frame, ofColor(center_color, opacity));

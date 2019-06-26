@@ -16,7 +16,7 @@ void ofApp::setup() {
 	directionalLight.setDiffuseColor(ofColor(255, 255, 255));
 	directionalLight.setSpecularColor(ofColor(255, 255, 255));
 	directionalLight.setDirectional();
-	directionalLight.setParent(mycam,true);
+	directionalLight.setParent(mycam, true);
 
 	mycam.setDistance(model->getAxisLength() * 2);
 	ofResetElapsedTimeCounter();
@@ -44,7 +44,7 @@ void ofApp::draw() {
 	// enable lighting //
 	ofEnableLighting();
 	directionalLight.enable();
-	
+
 	mycam.begin();
 	model->draw();
 	mycam.end();

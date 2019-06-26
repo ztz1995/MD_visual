@@ -96,72 +96,56 @@ void AtomModel::setup(int frames, string prefix)
 	loadData(frames, prefix);
 	cur_frame = 0;
 	axis.update(atom3d.axis_length[cur_frame]);
-	//neighbor_id.clear();
-	//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(center_id);
 	atom3d.group_map[center_id].update(cur_frame);
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
 	for (int i = 0; i < max_neighbors; i++) {
 		atom3d.group_map[frames_neighbor_id[cur_frame][i]].update(cur_frame);
 	}
-	//neighbor_id.clear();
-	//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(center_id);
-
-	//update particle system
 	atom3d.setup_particle(cur_frame, center_id, frames_neighbor_id[cur_frame], neighbor_num);
 }
 
-void AtomModel::update(bool force)
+void AtomModel::update()
 {
 	//cout << "update AtomModel... cur_frame=" << cur_frame << endl;
-	if (playing || force) {
+	if (playing) {
 		cur_frame = (ofGetElapsedTimeMicros() / (1000000 / frame_rate) + init_frame) % frame_num;
-		//cout << "update: " << cur_frame << endl;
-
-		// only update when current frame changed
-		if (cur_frame != last_frame|| force) {
-			axis.update(atom3d.axis_length[cur_frame]);
-			atom3d.group_map[center_id].update(cur_frame);
-			int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
-			for (int i = 0; i < max_neighbors; i++) {
-				atom3d.group_map[frames_neighbor_id[cur_frame][i]].update(cur_frame);
-			}
-			//neighbor_id.clear();
-			//neighbor_id = model_frames[cur_frame].get_neighbor_group_id(center_id);
-
-			//update particle system
-			//atom3d.setup_particle(cur_frame, center_id, frames_neighbor_id[cur_frame]);
-			//cout << frames_neighbor_id[cur_frame].size() << endl;
-			//frc_neighbor_changed = false;
+	}
+	// only update when current frame changed
+	if (cur_frame != last_frame || draw_neighbor_changed) {
+		axis.update(atom3d.axis_length[cur_frame]);
+		atom3d.group_map[center_id].update(cur_frame);
+		int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
+		//cout << "update: ";
+		for (int i = 0; i < max_neighbors; i++) {
+			//cout << frames_neighbor_id[cur_frame][i] << "  ";
+			atom3d.group_map[frames_neighbor_id[cur_frame][i]].update(cur_frame);
 		}
+		//cout << endl;
 		last_frame = cur_frame;
+		draw_neighbor_changed = false;
 	}
 	//when show forcefield, it should always be drawn even if paused,
-	//cout << frc_neighbor_changed << forcefield_toggle << endl;
-	if (frc_neighbor_changed && forcefield_toggle) {
-		atom3d.setup_particle(cur_frame, center_id, frames_neighbor_id[cur_frame], neighbor_num);
-		//cout << frames_neighbor_id[cur_frame].size() << endl;
-		frc_neighbor_changed = false;
-	}
 	if (forcefield_toggle) {
-		//cout << "updating particles" << endl;
+		if (frc_neighbor_changed) {
+			atom3d.setup_particle(cur_frame, center_id, frames_neighbor_id[cur_frame], neighbor_num);
+			frc_neighbor_changed = false;
+		}
 		atom3d.update_particle();
 	}
 }
 
 void AtomModel::draw() {
-	//cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
-	if (cur_frame < 0) {
-		update(true);
-	}
+	cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
 	axis.draw();
 	// here you will draw your object
 	atom3d.group_map[center_id].draw(cur_frame, ofColor(center_color, opacity));
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
+	//cout << "draw: ";
 	for (int i = 0; i < max_neighbors; i++) {
-		cout << frames_neighbor_id[cur_frame][i]<<"  ";
+		//cout << frames_neighbor_id[cur_frame][i]<<"  ";
 		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(cur_frame, ofColor(neighbor_color, opacity));
 	}
-	cout << endl;
+	//cout << endl;
 
 	//draw particle system
 	if (forcefield_toggle && !playing) {
@@ -180,6 +164,7 @@ void AtomModel::updateNeighbors(int _center_id, float _radius)
 		frames_neighbor_id.push_back(atom3d.get_neighbor_group_id(_center_id, _radius));
 	}
 	frc_neighbor_changed = true;
+	draw_neighbor_changed = true;
 }
 
 void AtomModel::updateParams(int frame_rate_new, int opacity_new)
@@ -207,6 +192,7 @@ float AtomModel::getAxisLength()
 void AtomModel::onPlayButton(ofxDatGuiButtonEvent e)
 {
 	playing = true;
+	ofResetElapsedTimeCounter();
 	ofLogNotice() << "hit Play button.";
 }
 
@@ -236,8 +222,8 @@ void AtomModel::onCenterIdSlider(ofxDatGuiSliderEvent e)
 		if (atom3d.group_map.count(id) == 1) {
 			center_id = id;
 			updateNeighbors(center_id, neighbor_radius);
-			cout << "center_id changed, set cur_frame " << cur_frame << " to -1." << endl;
-			cur_frame = -1;
+			//cout << "center_id changed, set cur_frame " << cur_frame << " to -1." << endl;
+			//cur_frame = -1;
 		}
 		else if (center_id >= 0) {
 			// has been set before

@@ -13,14 +13,15 @@ public:
 	void updateNeighbors(int center_id, float radius = -1.);
 	void updateParams(int fr = -1, int opacity = -1);
 	void draw();
-	void update(bool force=false);
+	void update();
 	float getAxisLength();
 	//vector<Atom3D> model_frames;
 	Atom3D atom3d;
 	vector<vector<int>> frames_neighbor_id;
 private:
 	//neighbor changed, used for force cal
-	bool frc_neighbor_changed = false;
+	bool frc_neighbor_changed = true;
+	bool draw_neighbor_changed = true;
 
 	//TODO: make neighbor_num ,colors and neighbor R tunable.
 	bool playing = false;

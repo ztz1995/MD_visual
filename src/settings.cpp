@@ -31,7 +31,7 @@ void Settings::setup() {
 	modelFrameNumSlider->setPrecision(0);
 	modelCenterIdSlider = modelFolder->addSlider("  Center id", 0, 250, 137);
 	modelCenterIdSlider->setPrecision(0);
-	modelNeighborNumSlider = modelFolder->addSlider("  Neighbor num", 0, 20, 8);
+	modelNeighborNumSlider = modelFolder->addSlider("  Neighbor num", 0, 100, 8);
 	modelNeighborNumSlider->setPrecision(0);
 	modelNeighborRadiusSlider = modelFolder->addSlider("  Radius", 0, 100, 50);
 	modelNeighborRadiusSlider->setPrecision(1);

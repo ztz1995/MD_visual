@@ -4,18 +4,19 @@ AtomModel::AtomModel(Settings* s)
 {
 	/* initial all paramters from settings
 	int frame_num, int center_id, int neighbor_num, int neighbor_radius,
-	int frame_rate, int opacity, ofColor center_color, neighbor_color,
+	int frame_rate, int color_mixing, ofColor center_color, neighbor_color,
 	bool forcefield_toggle,
 
 	bool fully_dissolved?,
 	*/
+	settings = s;
 	if (s != NULL) {
 		frame_num = s->modelFrameNumSlider->getValue();
 		center_id = s->modelCenterIdSlider->getValue();
 		neighbor_num = s->modelNeighborNumSlider->getValue();
 		neighbor_radius = s->modelNeighborRadiusSlider->getValue();
 		frame_rate = s->modelFrameRateSlider->getValue();
-		opacity = s->modelOpacitySlider->getValue();
+		color_mixing = s->modelColorMixingSlider->getValue();
 		center_color = s->modelCenterColorPicker->getColor();
 		neighbor_color = s->modelNeighborColorPicker->getColor();
 		forcefield_toggle = s->modelForceFieldToggle->getChecked();
@@ -28,7 +29,7 @@ AtomModel::AtomModel(Settings* s)
 		neighbor_num = 10;
 		neighbor_radius = 20;
 		frame_rate = 1;
-		opacity = 20;
+		color_mixing = 20;
 		center_color = ofColor(148, 0, 211);
 		neighbor_color = ofColor(3, 200, 158);
 		forcefield_toggle = false;
@@ -89,6 +90,7 @@ void AtomModel::loadData(int frames, string prefix)
 	//check max frame amount
 	max_frame_num = frame_no;
 	ofLogNotice() << "Total " << max_frame_num << " frames exist.";
+	settings->modelCurFrame->setMax(frame_num);
 }
 
 void AtomModel::setup(int frames, string prefix)
@@ -123,6 +125,11 @@ void AtomModel::update()
 		//cout << endl;
 		last_frame = cur_frame;
 		draw_neighbor_changed = false;
+
+		//
+		if (!settings->modelCurFrame->getMouseDown()) {
+			settings->modelCurFrame->setValue(cur_frame, false);
+		}
 	}
 	//when show forcefield, it should always be drawn even if paused,
 	if (forcefield_toggle) {
@@ -138,12 +145,12 @@ void AtomModel::draw() {
 	//cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
 	axis.draw();
 	// here you will draw your object
-	atom3d.group_map[center_id].draw(cur_frame, ofColor(center_color, opacity));
+	atom3d.group_map[center_id].draw(cur_frame, ofColor(center_color, color_mixing));
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
 	//cout << "draw: ";
 	for (int i = 0; i < max_neighbors; i++) {
 		//cout << frames_neighbor_id[cur_frame][i]<<"  ";
-		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(cur_frame, ofColor(neighbor_color, opacity));
+		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(cur_frame, ofColor(neighbor_color, color_mixing));
 	}
 	//cout << endl;
 
@@ -170,12 +177,12 @@ void AtomModel::updateNeighbors(int _center_id, float _radius)
 void AtomModel::updateParams(int frame_rate_new, int opacity_new)
 {
 	//not used yet
-	// opacity = 0 ~ 255
+	// color_mixing = 0 ~ 255
 	if (frame_rate_new > 0) {
 		frame_rate = frame_rate_new;
 	}
 	if (opacity_new >= 0) {
-		opacity = opacity_new;
+		color_mixing = opacity_new;
 	}
 }
 
@@ -210,9 +217,17 @@ void AtomModel::onStopButton(ofxDatGuiButtonEvent e)
 	ofLogNotice() << "hit Stop button.";
 }
 
+void AtomModel::onCurFrameSlider(ofxDatGuiSliderEvent e)
+{
+	cur_frame = e.target->getValue();
+	ofLogNotice() << "onCurFrameSlider called: " << e.target->getValue();
+}
+
 void AtomModel::onFrameNumSlider(ofxDatGuiSliderEvent e)
 {
 	loadData(int(e.target->getValue()), path_prefix);
+	settings->modelCurFrame->setMax(frame_num);
+	ofLogNotice() << "Frame num slider: set cur frame max to " << frame_num;
 }
 
 void AtomModel::onCenterIdSlider(ofxDatGuiSliderEvent e)
@@ -264,8 +279,8 @@ void AtomModel::onFrameRateSlider(ofxDatGuiSliderEvent e)
 
 void AtomModel::onOpacitySlider(ofxDatGuiSliderEvent e)
 {
-	opacity = e.target->getValue();
-	ofLogNotice() << "Model opacity: " << opacity;
+	color_mixing = e.target->getValue();
+	ofLogNotice() << "Color Mixing: " << color_mixing;
 }
 
 void AtomModel::onCenterColorPicker(ofxDatGuiColorPickerEvent e)

@@ -23,12 +23,11 @@ public:
 	ofxDatGuiButton* stopButton;
 	//dissolve toggle
 	ofxDatGuiToggle* modelDissolvedToggle;
-	ofxDatGuiSlider* modelFrameNumSlider, * modelNeighborNumSlider, * modelCenterIdSlider, * modelNeighborRadiusSlider;
-
-	//model frame rate
-	ofxDatGuiSlider* modelFrameRateSlider;
-	//model neighbor_color&opacity
-	ofxDatGuiSlider* modelOpacitySlider;
+	//frame related
+	ofxDatGuiSlider* modelFrameNumSlider, *modelCurFrame,  * modelFrameRateSlider;
+	ofxDatGuiSlider* modelNeighborNumSlider, * modelCenterIdSlider, * modelNeighborRadiusSlider;
+	//model neighbor_color&color_mixing
+	ofxDatGuiSlider* modelColorMixingSlider;
 	ofxDatGuiColorPicker* modelCenterColorPicker,* modelNeighborColorPicker;
 	ofxDatGuiToggle* modelForceFieldToggle;
 	/*end model setting items*/

@@ -98,10 +98,10 @@ void AtomModel::setup(int frames, string prefix)
 	loadData(frames, prefix);
 	cur_frame = 0;
 	axis.update(atom3d.axis_length[cur_frame]);
-	atom3d.group_map[center_id].update(cur_frame);
+	atom3d.group_map[center_id]->update(cur_frame);
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
 	for (int i = 0; i < max_neighbors; i++) {
-		atom3d.group_map[frames_neighbor_id[cur_frame][i]].update(cur_frame);
+		atom3d.group_map[frames_neighbor_id[cur_frame][i]]->update(cur_frame);
 	}
 	atom3d.setup_particle(cur_frame, center_id, frames_neighbor_id[cur_frame], neighbor_num);
 }
@@ -115,18 +115,18 @@ void AtomModel::update()
 	// only update when current frame changed
 	if (cur_frame != last_frame || draw_neighbor_changed) {
 		axis.update(atom3d.axis_length[cur_frame]);
-		atom3d.group_map[center_id].update(cur_frame);
+		atom3d.group_map[center_id]->update(cur_frame);
 		int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
 		//cout << "update: ";
 		for (int i = 0; i < max_neighbors; i++) {
 			//cout << frames_neighbor_id[cur_frame][i] << "  ";
-			atom3d.group_map[frames_neighbor_id[cur_frame][i]].update(cur_frame);
+			atom3d.group_map[frames_neighbor_id[cur_frame][i]]->update(cur_frame);
 		}
 		//cout << endl;
 		last_frame = cur_frame;
 		draw_neighbor_changed = false;
 
-		//
+		//update cur_frame when running
 		if (!settings->modelCurFrame->getMouseDown()) {
 			settings->modelCurFrame->setValue(cur_frame, false);
 		}
@@ -145,12 +145,12 @@ void AtomModel::draw() {
 	//cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
 	axis.draw();
 	// here you will draw your object
-	atom3d.group_map[center_id].draw(cur_frame, ofColor(center_color, color_mixing));
+	atom3d.group_map[center_id]->draw(cur_frame, ofColor(center_color, opacity));
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
 	//cout << "draw: ";
 	for (int i = 0; i < max_neighbors; i++) {
 		//cout << frames_neighbor_id[cur_frame][i]<<"  ";
-		atom3d.group_map[frames_neighbor_id[cur_frame][i]].draw(cur_frame, ofColor(neighbor_color, color_mixing));
+		atom3d.group_map[frames_neighbor_id[cur_frame][i]]->draw(cur_frame, ofColor(neighbor_color, color_mixing));
 	}
 	//cout << endl;
 

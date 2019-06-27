@@ -32,24 +32,31 @@ AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type) {
 	this->group_type = _group_type;
 }
 
-void AtomGroup::append_atom(Atom _atom) {
-	if (this->atom_map.count(_atom.id)) {
+AtomGroup::~AtomGroup() {
+	for (auto it = atom_map.begin(); it != atom_map.end(); it++) {
+		delete it->second;
+	}
+};
+
+
+void AtomGroup::append_atom(Atom* _atom) {
+	if (this->atom_map.count(_atom->id)) {
 		throw "Atom already exist!";
 	}
 	else {
-		atom_map.insert(make_pair(_atom.id, _atom));
+		atom_map.insert(make_pair(_atom->id, _atom));
 	}
 }
 
 void AtomGroup::update(int frame_no) {
 	if (!set_iso) {
 		iso.setup(64);
-		set_iso = TRUE;
+		set_iso = true;
 	}
 	ofVec3f max_co = { 0.,0.,0. };
 	ofVec3f dif = { 0.,0.,0. };
 	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-		dif = map_it->second.coordinate[frame_no] - get_center(frame_no);
+		dif = map_it->second->coordinate[frame_no] - get_center(frame_no);
 		for (int i = 0; i < 3; i++) {
 			if (fabs(dif[i]) > max_co[i])
 				max_co = ofVec3f(fabs(dif[i]));
@@ -60,8 +67,8 @@ void AtomGroup::update(int frame_no) {
 	//cout << iso_scale << endl;
 	vector<ofPoint> centers;
 	for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-		if (map_it->second.element != "H") {
-			centers.push_back((map_it->second.coordinate[frame_no] - get_center(frame_no) + max_co) / iso_scale);
+		if (map_it->second->element != "H") {
+			centers.push_back((map_it->second->coordinate[frame_no] - get_center(frame_no) + max_co) / iso_scale);
 			//cout << (map_it->second.coordinate - min_co) / iso_scale << endl;
 		}
 	}
@@ -75,33 +82,25 @@ void AtomGroup::draw(int frame_no, ofColor color) {
 	if (group_type == "TO") {
 		self_color = ofColor::yellow;
 	}
-	else {
-		if (group_type == "U") {
-			self_color = ofColor::purple;
-		}
-		else {
-			if (group_type == "Ph" || group_type == "B") {
-				self_color = ofColor::blue;
-			}
-			else {
-				if (group_type == "Es") {
-					self_color = ofColor::turquoise;
-				}
-				else {
-					self_color = color;
-					cout << group_type << endl;
-				}
-			}
-		}
+	else if (group_type == "U") {
+		self_color = ofColor::purple;
 	}
+	else if (group_type == "Ph" || group_type == "B") {
+		self_color = ofColor::blue;
+	}
+	else if (group_type == "Es") {
+		self_color = ofColor::turquoise;
+	}
+	else {
+		self_color = color;
+		cout << group_type << endl;
+	}
+
 	float rand_max = 100;
 	ofSeedRandom(group_id);
 
 	double op = color.a;
 	//rand_max should limit to: rand_max<255
-	//color.r = (color.r*2. + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5) + self_color.r) / 3;
-	//color.g = (color.g*2. + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5) + self_color.g) / 3;
-	//color.b = (color.b*2. + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5) + self_color.b) / 3;
 	color.r = (color.r * op + ofRandom(rand_max) * ((color.r - 128 < 0) - 0.5) + self_color.r * 64.) / (64. + op);
 	color.g = (color.g * op + ofRandom(rand_max) * ((color.g - 128 < 0) - 0.5) + self_color.g * 64.) / (64. + op);
 	color.b = (color.b * op + ofRandom(rand_max) * ((color.b - 128 < 0) - 0.5) + self_color.b * 64.) / (64. + op);
@@ -124,31 +123,26 @@ void AtomGroup::draw(int frame_no, ofColor color) {
 	ofScale(iso_scale);
 	iso.draw(color);
 	ofPopMatrix();
-	//for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-	//	ofDrawIcoSphere(map_it->second.coordinate, 1);
-	//}
-
-
-#ifdef DEBUG
-	cout << "draw atom at: " << map_it->second.coordinate << endl;
-#endif // DEBUG
 }
 
 ofVec3f AtomGroup::get_center(int frame_no) {
-	if (this->cal_center[frame_no] == FALSE) {
-#ifdef DEBUG
-		cout << "get center called" << endl;
-#endif // !DEBUG
+	if (this->cal_center[frame_no] == false) {
 		ofVec3f _center = ofVec3f(0., 0., 0.);
 		for (auto map_it = this->atom_map.begin(); map_it != this->atom_map.end(); map_it++) {
-			_center += map_it->second.coordinate[frame_no];
+			_center += map_it->second->coordinate[frame_no];
 		}
 		_center /= this->atom_map.size();
 		this->center[frame_no] = _center;
-		this->cal_center[frame_no] = TRUE;
+		this->cal_center[frame_no] = true;
 	}
 	return this->center[frame_no];
 }
+
+Atom3D::~Atom3D() {
+	for (auto it = group_map.begin(); it != group_map.end(); it++) {
+		delete it->second;
+	}
+};
 
 void Atom3D::setup(string prefix) {
 	int frame_no = 0;
@@ -169,8 +163,11 @@ void Atom3D::setup(string prefix) {
 	for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
 		if (it.key() != "length") {
 			ofJson atm_json = it.value();
-			Atom new_atom(atm_json, axis_length[0]);
-			append_atom(new_atom);
+			Atom* p_atm = NULL;
+			p_atm = new Atom(atm_json, axis_length[0]);
+			append_atom(p_atm);
+			//Atom new_atom(atm_json, axis_length[0]);
+			//append_atom(new_atom);
 		}
 	}
 	this->frames = 1;
@@ -193,7 +190,9 @@ void Atom3D::update(string prefix, int frames) {
 					if (it.key() != "length") {
 						ofJson atm_json = it.value();
 						int id = atm_json["id"], group_id = atm_json["group_id"];
-						group_map[group_id].atom_map[id].update(atm_json, axis_length[frame_no]);
+						// test
+						//group_map[group_id].atom_map[id].update(atm_json, axis_length[frame_no]);
+						group_map[group_id]->atom_map[id]->update(atm_json, axis_length[frame_no]);
 					}
 				}
 			}
@@ -213,27 +212,45 @@ void Atom3D::load_data(string prefix, int frames) {
 };
 
 // Atom3D contains all the atom groups for one frame
-void Atom3D::append_atom(Atom _atom) {
-	if (this->group_map.count(_atom.group_id)) {
-		group_map[_atom.group_id].append_atom(_atom);
+void Atom3D::append_atom(Atom* _atom) {
+	if (this->group_map.count(_atom->group_id)) {
+		// test
+		//group_map[_atom.group_id].append_atom(_atom);
+		group_map[_atom->group_id]->append_atom(_atom);
 	}
 	else {
 		//ofLogNotice() << "new atom group id=" << _atom.group_id;
-		AtomGroup new_group(_atom.group_id, _atom.mole_id, _atom.group_type);
-		new_group.append_atom(_atom);
-		group_map.insert(make_pair(_atom.group_id, new_group));
-		max_group_id = max(max_group_id, _atom.group_id);
+
+		// test
+		//AtomGroup new_group(_atom.group_id, _atom.mole_id, _atom.group_type);
+		//new_group.append_atom(_atom);
+		//group_map.insert(make_pair(_atom.group_id, new_group));
+
+		AtomGroup* agp = NULL;
+		agp = new AtomGroup(_atom->group_id, _atom->mole_id, _atom->group_type);
+		agp->append_atom(_atom);
+		group_map.insert(make_pair(_atom->group_id, agp));
+
+
+		max_group_id = max(max_group_id, _atom->group_id);
 	}
 }
 
 vector<int> Atom3D::get_neighbor_group_id(const int center_group_id, float r, int cur_frame) {
-	AtomGroup& c_grp = this->group_map[center_group_id];
+	
+	// test
+	//AtomGroup& c_grp = this->group_map[center_group_id];
+	AtomGroup* c_grp = this->group_map[center_group_id];
+
 	vector<float> distance;
 	vector<int> arg_vec;
 	for (auto it = this->group_map.begin(); it != this->group_map.end(); it++) {
 		//if ((it->first != center_group_id) && (it->second.mole_id != c_grp.mole_id)) {
 		if (it->first != center_group_id) {
-			float _d = c_grp.get_center(cur_frame).distance(it->second.get_center(cur_frame));
+			// test
+			//float _d = c_grp.get_center(cur_frame).distance(it->second.get_center(cur_frame));
+			float _d = c_grp->get_center(cur_frame).distance(it->second->get_center(cur_frame));
+			
 			if (_d < r) {
 				distance.push_back(_d);
 				arg_vec.push_back(it->first);
@@ -261,26 +278,28 @@ void Atom3D::setup_particle(int cur_frame, int cent_id, vector<int> neighbor_id,
 		/*cout << neighbor_id.size() << endl;*/
 		// update atom coordinate
 		ps.clear();
-		AtomGroup& ct_grp = group_map[cent_id];
+		// test
+		//AtomGroup& ct_grp = group_map[cent_id];
+		AtomGroup* ct_grp = group_map[cent_id];
 		int atom_num = 0;
-		for (auto c_it = ct_grp.atom_map.begin(); c_it != ct_grp.atom_map.end(); c_it++) {
-			Atom& c_atm = c_it->second;
-			if (c_atm.element != "H") {
+		for (auto c_it = ct_grp->atom_map.begin(); c_it != ct_grp->atom_map.end(); c_it++) {
+			Atom* c_atm = c_it->second;
+			if (c_atm->element != "H") {
 				ofVec3f force = { 0.,0.,0. };
 				int max_neighbors = min(int(neighbor_id.size()), neighbor_num);
 				for (int _n = 0; _n < max_neighbors; _n++) {
 					int n_id = neighbor_id[_n];
-					AtomGroup& n_grp = group_map[n_id];
-					for (auto n_it = n_grp.atom_map.begin(); n_it != n_grp.atom_map.end(); n_it++) {
-						Atom& n_atm = n_it->second;
-						float distance = c_atm.coordinate[cur_frame].distance(n_atm.coordinate[cur_frame]);
+					AtomGroup* n_grp = group_map[n_id];
+					for (auto n_it = n_grp->atom_map.begin(); n_it != n_grp->atom_map.end(); n_it++) {
+						Atom* n_atm = n_it->second;
+						float distance = c_atm->coordinate[cur_frame].distance(n_atm->coordinate[cur_frame]);
 						if (distance > 6.) {
-							ofVec3f direction = (c_atm.coordinate[cur_frame] - n_atm.coordinate[cur_frame]).normalize();
+							ofVec3f direction = (c_atm->coordinate[cur_frame] - n_atm->coordinate[cur_frame]).normalize();
 							force += direction * cal_frc(c_atm, n_atm, cur_frame);
 						}
 					}
 				}
-				ps.push_back(new particleSystem(c_atm.coordinate[cur_frame], force * 2));
+				ps.push_back(new particleSystem(c_atm->coordinate[cur_frame], force * 2));
 				//cout << force*10 << endl;
 				atom_num++;
 			}
@@ -305,27 +324,27 @@ void Atom3D::draw_particle() {
 	}
 };
 
-float Atom3D::cal_vdw(Atom atom1, Atom atom2, float r) {
-	float r_i = atom1.f_r, r_j = atom2.f_r;
+float Atom3D::cal_vdw(const Atom* atom1, const Atom* atom2, float r) {
+	float r_i = atom1->f_r, r_j = atom2->f_r;
 	float f_v = 0.;
 	if (r < 9.5) {
 		float r_ij = pow((pow(r_i, 6) + pow(r_j, 6) / 2), 1 / 6);
-		float f_e = 2 * sqrt(atom1.f_e * atom2.f_e) / pow(r_i, 3) / pow(r_j, 3);
+		float f_e = 2 * sqrt(atom1->f_e * atom2->f_e) / pow(r_i, 3) / pow(r_j, 3);
 		f_v = 18 * f_e / r_ij * (pow((r_ij / r), 10) - pow((r_ij / r), 7));
 	}
 	return f_v;
 }
 
-float Atom3D::cal_elec(Atom atom1, Atom atom2, float r) {
+float Atom3D::cal_elec(const Atom* atom1, const Atom* atom2, float r) {
 	float f_e = 0.;
 	if (r < 9.5) {
-		f_e = atom1.charge * atom2.charge / r / r;
+		f_e = atom1->charge * atom2->charge / r / r;
 	}
 	return f_e;
 }
 
-float Atom3D::cal_frc(Atom atom1, Atom atom2, int frame_no) {
-	float r = atom1.coordinate[frame_no].distance(atom2.coordinate[frame_no]);
+float Atom3D::cal_frc(const Atom* atom1, const Atom* atom2, int frame_no) {
+	float r = atom1->coordinate[frame_no].distance(atom2->coordinate[frame_no]);
 	return cal_vdw(atom1, atom2, r) + cal_elec(atom1, atom2, r);
 }
 

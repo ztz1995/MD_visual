@@ -11,7 +11,6 @@ AtomModel::AtomModel(Settings* s)
 	*/
 	settings = s;
 	if (s != NULL) {
-		frame_num = s->modelFrameNumSlider->getValue();
 		center_id = s->modelCenterIdSlider->getValue();
 		neighbor_num = s->modelNeighborNumSlider->getValue();
 		neighbor_radius = s->modelNeighborRadiusSlider->getValue();
@@ -24,7 +23,6 @@ AtomModel::AtomModel(Settings* s)
 		fully_dissolved = s->modelDissolvedToggle->getChecked();
 	}
 	else {
-		frame_num = 1;
 		center_id = 137;
 		neighbor_num = 10;
 		neighbor_radius = 20;
@@ -90,7 +88,7 @@ void AtomModel::loadData(int frames, string prefix)
 	//check max frame amount
 	max_frame_num = frame_no;
 	ofLogNotice() << "Total " << max_frame_num << " frames exist.";
-	settings->modelCurFrame->setMax(frame_num);
+	settings->modelCurFrameSlider->setMax(frame_num);
 }
 
 void AtomModel::setup(int frames, string prefix)
@@ -127,8 +125,8 @@ void AtomModel::update()
 		draw_neighbor_changed = false;
 
 		//update cur_frame when running
-		if (!settings->modelCurFrame->getMouseDown()) {
-			settings->modelCurFrame->setValue(cur_frame, false);
+		if (!settings->modelCurFrameSlider->getMouseDown()) {
+			settings->modelCurFrameSlider->setValue(cur_frame, false);
 		}
 	}
 	//when show forcefield, it should always be drawn even if paused,
@@ -145,7 +143,7 @@ void AtomModel::draw() {
 	//cout << "AtomModel drawing: cur_frame=" << cur_frame << endl;
 	axis.draw();
 	// here you will draw your object
-	atom3d.group_map[center_id]->draw(cur_frame, ofColor(center_color, opacity));
+	atom3d.group_map[center_id]->draw(cur_frame, ofColor(center_color, color_mixing));
 	int max_neighbors = min(int(frames_neighbor_id[cur_frame].size()), neighbor_num);
 	//cout << "draw: ";
 	for (int i = 0; i < max_neighbors; i++) {
@@ -214,6 +212,7 @@ void AtomModel::onStopButton(ofxDatGuiButtonEvent e)
 {
 	playing = false;
 	cur_frame = 0;
+	forcefield_toggle = false;
 	ofLogNotice() << "hit Stop button.";
 }
 
@@ -223,12 +222,12 @@ void AtomModel::onCurFrameSlider(ofxDatGuiSliderEvent e)
 	ofLogNotice() << "onCurFrameSlider called: " << e.target->getValue();
 }
 
-void AtomModel::onFrameNumSlider(ofxDatGuiSliderEvent e)
-{
-	loadData(int(e.target->getValue()), path_prefix);
-	settings->modelCurFrame->setMax(frame_num);
-	ofLogNotice() << "Frame num slider: set cur frame max to " << frame_num;
-}
+//void AtomModel::onFrameNumSlider(ofxDatGuiSliderEvent e)
+//{
+//	loadData(int(e.target->getValue()), path_prefix);
+//	settings->modelCurFrameSlider->setMax(frame_num);
+//	ofLogNotice() << "Frame num slider: set cur frame max to " << frame_num;
+//}
 
 void AtomModel::onCenterIdSlider(ofxDatGuiSliderEvent e)
 {

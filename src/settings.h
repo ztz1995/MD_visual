@@ -24,7 +24,8 @@ public:
 	//dissolve toggle
 	ofxDatGuiToggle* modelDissolvedToggle;
 	//frame related
-	ofxDatGuiSlider* modelFrameNumSlider, *modelCurFrame,  * modelFrameRateSlider;
+	//ofxDatGuiSlider* modelFrameNumSlider;
+	ofxDatGuiSlider* modelCurFrameSlider,  * modelFrameRateSlider;
 	ofxDatGuiSlider* modelNeighborNumSlider, * modelCenterIdSlider, * modelNeighborRadiusSlider;
 	//model neighbor_color&color_mixing
 	ofxDatGuiSlider* modelColorMixingSlider;

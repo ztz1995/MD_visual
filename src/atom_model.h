@@ -36,7 +36,7 @@ private:
 	// setting model params
 	//max_frame_num denpends on valid frame file amount
 	int  frame_num = 5, max_frame_num = 5;
-	void onFrameNumSlider(ofxDatGuiSliderEvent e);
+	//void onFrameNumSlider(ofxDatGuiSliderEvent e);
 	int frame_rate;
 	void onFrameRateSlider(ofxDatGuiSliderEvent e);
 	int center_id = 0;    //50 Ph  100 TO

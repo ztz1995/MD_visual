@@ -30,10 +30,10 @@ void Settings::setup() {
 	//model settings:: frame num/current/rate/, neighbor_color, neighbor_num, cent_id
 	modelFolder = gui->addFolder("Model Settings", ofColor::green);
 	//frame related
-	modelFrameNumSlider = modelFolder->addSlider("  Frames", 1, 20, 5);
-	modelFrameNumSlider->setPrecision(0);
-	modelCurFrame = modelFolder->addSlider("  Current frame", 0, 0, 0);
-	modelCurFrame->setPrecision(0);
+	//modelFrameNumSlider = modelFolder->addSlider("  Frames", 1, 20, 5);
+	//modelFrameNumSlider->setPrecision(0);
+	modelCurFrameSlider = modelFolder->addSlider("  Current frame", 0, 0, 0);
+	modelCurFrameSlider->setPrecision(0);
 	modelFrameRateSlider = modelFolder->addSlider("  Model FR", 1, 25, 1);
 	modelFrameRateSlider->setPrecision(0);
 	//center/neighbor group related
@@ -101,6 +101,7 @@ void Settings::bindEventsToModel(AtomModel* model)
 	modelDissolvedToggle->onToggleEvent(model, &AtomModel::onDissolvedToggle);
 	// todo load data.
 	//modelFrameNumSlider->onSliderEvent(model, &AtomModel::onFrameNumSlider);
+	modelCurFrameSlider->onSliderEvent(model, &AtomModel::onCurFrameSlider);
 	modelNeighborNumSlider->onSliderEvent(model, &AtomModel::onNeighborNumSlider);
 	modelCenterIdSlider->onSliderEvent(model, &AtomModel::onCenterIdSlider);
 	modelNeighborRadiusSlider->onSliderEvent(model, &AtomModel::onNeighborRadiusSlider);
@@ -110,7 +111,7 @@ void Settings::bindEventsToModel(AtomModel* model)
 	modelNeighborColorPicker->onColorPickerEvent(model, &AtomModel::onNeighborColorPicker);
 	modelForceFieldToggle->onToggleEvent(model, &AtomModel::onForceFieldToggle);
 	//update panel like slider max value
-	modelFrameNumSlider->setMax(model->max_frame_num);
+	//modelFrameNumSlider->setMax(model->max_frame_num);
 }
 
 

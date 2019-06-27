@@ -30,11 +30,16 @@ public:
 	// atom group attributes, save atom in a map<atom_id atom>
 	int group_id = 0, mole_id = 0;
 	string group_type = "";
-	map<int, Atom> atom_map;
+	// test
+	//map<int, Atom> atom_map;
+	map<int, Atom*> atom_map;
 
 	AtomGroup() {};
+	~AtomGroup();
 	AtomGroup::AtomGroup(int _group_id, int _mole_id, string _group_type);
-	void append_atom(Atom _atom);
+	// test
+	//void append_atom(Atom _atom);
+	void append_atom(Atom *_atom);
 
 	void update(int frame_no);
 	void draw(int frame_no, ofColor color = ofColor(3, 168, 158, 240));
@@ -44,9 +49,9 @@ public:
 private:
 	// meta ball
 	MarchingCubes iso;
-	bool set_iso = FALSE;
+	bool set_iso = false;
 	ofVec3f iso_scale;
-	bool cal_center[1000] = { FALSE };
+	bool cal_center[1000] = { false };
 	ofVec3f center[1000];
 };
 
@@ -55,10 +60,12 @@ public:
 	// save atom group in a map<atom_group_id atom_group>
 	vector<float> axis_length;
 	int frames = 0, max_group_id = 0;
-	map<int, AtomGroup> group_map;
+	//map<int, AtomGroup> group_map;
+	map<int, AtomGroup*> group_map;
 
 	Atom3D() {};
-	void append_atom(Atom input_atom);
+	~Atom3D();
+	void append_atom(Atom* _atom);
 	void setup(string prefix);
 	void update(string prefix, int frames);
 	void load_data(string prefix, int frames);
@@ -76,9 +83,9 @@ private:
 	vector<int> _arg_sort(vector<float> ivec, vector<int> arg_vec);
 
 	// calculate force
-	float cal_vdw(Atom atom1, Atom atom2, float r);
-	float cal_elec(Atom atom1, Atom atom2, float r);
-	float cal_frc(Atom atom1, Atom atom2, int frame_no);
+	float cal_vdw(const Atom* atom1, const Atom* atom2, float r);
+	float cal_elec(const Atom* atom1, const Atom* atom2, float r);
+	float cal_frc(const Atom* atom1, const Atom* atom2, int frame_no);
 };
 
 class Axis {

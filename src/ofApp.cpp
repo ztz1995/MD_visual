@@ -6,7 +6,7 @@ void ofApp::setup() {
 	settings = Settings();
 	settings.setup();
 	model = new AtomModel(&settings);
-	model->setup(5, "data/atom_data/atom_info_");
+	model->setup(50, "data/atom_data/atom_info_");
 	settings.bindEventsToModel(model);
 
 	// turn on smooth lighting //

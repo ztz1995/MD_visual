@@ -19,8 +19,6 @@ AtomModel::AtomModel(Settings* s)
 		center_color = s->modelCenterColorPicker->getColor();
 		neighbor_color = s->modelNeighborColorPicker->getColor();
 		forcefield_toggle = s->modelForceFieldToggle->getChecked();
-		//not used.
-		fully_dissolved = s->modelDissolvedToggle->getChecked();
 	}
 	else {
 		center_id = 137;
@@ -261,13 +259,6 @@ void AtomModel::onNeighborRadiusSlider(ofxDatGuiSliderEvent e)
 		neighbor_radius = e.target->getValue();
 	}
 	updateNeighbors(center_id, neighbor_radius);
-}
-
-void AtomModel::onDissolvedToggle(ofxDatGuiToggleEvent e)
-{
-	//TODO: dissolve part not finished.
-	fully_dissolved = e.target->getChecked();
-	ofLogNotice() << "[NOT finished!]Dissolved toggle: " << fully_dissolved;
 }
 
 void AtomModel::onFrameRateSlider(ofxDatGuiSliderEvent e)

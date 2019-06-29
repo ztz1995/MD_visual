@@ -88,6 +88,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
+	//button: left 0, center 1, right 2
 	if (button == 0) {
 
 	}

@@ -43,6 +43,7 @@ void Settings::setup() {
 	modelNeighborNumSlider->setPrecision(0);
 	modelNeighborRadiusSlider = modelFolder->addSlider("  Radius", 0, 100, 50);
 	modelNeighborRadiusSlider->setPrecision(1);
+	modelForceFieldToggle = modelFolder->addToggle("  Show force field");
 	// change for Opacity to Color mixing
 	//modelColorMixingSlider = modelFolder->addSlider("  Opacity", 0, 255, 255);
 	modelColorMixingSlider = modelFolder->addSlider("  Color mixing", 0, 255, 20);
@@ -50,9 +51,6 @@ void Settings::setup() {
 	modelCenterColorPicker = modelFolder->addColorPicker("  Center color", ofColor(148, 0, 211));
 	modelNeighborColorPicker = modelFolder->addColorPicker("  Neighbor color", ofColor(3, 168, 158));
 
-	modelDissolvedToggle = modelFolder->addToggle("  Fully dissolved");
-	modelDissolvedToggle->setVisible(false); // hide 
-	modelForceFieldToggle = modelFolder->addToggle("  Show force field");
 	modelFolder->expand();
 	gui->addBreak();
 	
@@ -67,8 +65,8 @@ void Settings::setup() {
 	infoBoard = gui->addFolder("Panel Settings", ofColor::gray);
 	//frame rate
 	FRMonitor = infoBoard->addFRM(0.1);
-	FRMonitor->setLabel("  Frame rate");
-	appFRSetter = infoBoard->addSlider("  App FR", 10, 120, 60);
+	FRMonitor->setLabel("  Realtime App FR");
+	appFRSetter = infoBoard->addSlider("  Max App FR", 10, 120, 60);
 	appFRSetter->onSliderEvent(this, &Settings::onSliderEvent);
 	opacitySlider = infoBoard->addSlider("  Panel opacity", 0, 1, 1);
 	opacitySlider->onSliderEvent(this, &Settings::onSliderEvent);
@@ -98,7 +96,6 @@ void Settings::bindEventsToModel(AtomModel* model)
 	pauseButton->onButtonEvent(model, &AtomModel::onPauseButton);
 	stopButton->onButtonEvent(model, &AtomModel::onStopButton);
 
-	modelDissolvedToggle->onToggleEvent(model, &AtomModel::onDissolvedToggle);
 	// todo load data.
 	//modelFrameNumSlider->onSliderEvent(model, &AtomModel::onFrameNumSlider);
 	modelCurFrameSlider->onSliderEvent(model, &AtomModel::onCurFrameSlider);

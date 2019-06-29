@@ -21,8 +21,6 @@ public:
 	ofxDatGuiButton* playButton;
 	ofxDatGuiButton* pauseButton;
 	ofxDatGuiButton* stopButton;
-	//dissolve toggle
-	ofxDatGuiToggle* modelDissolvedToggle;
 	//frame related
 	//ofxDatGuiSlider* modelFrameNumSlider;
 	ofxDatGuiSlider* modelCurFrameSlider,  * modelFrameRateSlider;

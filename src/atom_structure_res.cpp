@@ -93,7 +93,7 @@ void AtomGroup::draw(int frame_no, ofColor color) {
 	}
 	else {
 		self_color = color;
-		cout << group_type << endl;
+		ofLogNotice() << group_type << endl;
 	}
 
 	float rand_max = 100;

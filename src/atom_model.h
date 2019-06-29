@@ -53,7 +53,5 @@ private:
 	void onNeighborColorPicker(ofxDatGuiColorPickerEvent e);
 	bool forcefield_toggle;
 	void onForceFieldToggle(ofxDatGuiToggleEvent e);
-	bool fully_dissolved;//not used?
-	void onDissolvedToggle(ofxDatGuiToggleEvent e);
 	//vector<float> _rand_nums;
 };

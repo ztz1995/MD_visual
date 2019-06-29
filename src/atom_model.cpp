@@ -29,8 +29,6 @@ AtomModel::AtomModel(Settings* s)
 		center_color = ofColor(148, 0, 211);
 		neighbor_color = ofColor(3, 200, 158);
 		forcefield_toggle = false;
-		//not used.
-		fully_dissolved = false;
 	}
 }
 
@@ -194,9 +192,13 @@ float AtomModel::getAxisLength()
 
 void AtomModel::onPlayButton(ofxDatGuiButtonEvent e)
 {
-	playing = true;
-	ofResetElapsedTimeCounter();
-	ofLogNotice() << "hit Play button.";
+	if (!playing) {
+		playing = true;
+		ofResetElapsedTimeCounter();
+		settings->modelForceFieldToggle->setChecked(false);
+		forcefield_toggle = false;
+		ofLogNotice() << "hit Play button.";
+	}
 }
 
 void AtomModel::onPauseButton(ofxDatGuiButtonEvent e)
@@ -210,6 +212,7 @@ void AtomModel::onStopButton(ofxDatGuiButtonEvent e)
 {
 	playing = false;
 	cur_frame = 0;
+	init_frame = 0;
 	forcefield_toggle = false;
 	ofLogNotice() << "hit Stop button.";
 }
@@ -232,15 +235,17 @@ void AtomModel::onCenterIdSlider(ofxDatGuiSliderEvent e)
 	int id = e.target->getValue();
 	if (cur_frame >= 0) {
 		if (atom3d.group_map.count(id) == 1) {
+			onPauseButton();
 			center_id = id;
 			updateNeighbors(center_id, neighbor_radius);
+			onPlayButton();
 			//cout << "center_id changed, set cur_frame " << cur_frame << " to -1." << endl;
 			//cur_frame = -1;
 		}
 		else if (center_id >= 0) {
 			// has been set before
 			e.target->setValue(center_id);
-			cout << "reset center_id from " << id << " to " << center_id << endl;
+			ofLogNotice() << "reset center_id from " << id << " to " << center_id << endl;
 		}
 	}
 }

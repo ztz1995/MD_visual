@@ -57,9 +57,9 @@ public:
 		_scale = 1.0;
 	}
 	void setScale(float scale) {
-		cout << "setScale " << _scale << " to " << scale << endl;
+		ofLogNotice() << "to setScale " << _scale << " to " << scale << endl;
 		if (scale == _scale) {
-			cout << "same scale " << scale << ", skip" << endl;
+			ofLogNotice() << "same scale " << scale << ", skip" << endl;
 			return;
 		}
 		ofLogNotice() << "set panel scale: " << scale;

@@ -171,4 +171,8 @@
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="roadmap.md" />
+    <None Include="README.md" />
+  </ItemGroup>
 </Project>

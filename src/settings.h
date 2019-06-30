@@ -21,14 +21,12 @@ public:
 	ofxDatGuiButton* playButton;
 	ofxDatGuiButton* pauseButton;
 	ofxDatGuiButton* stopButton;
-	//dissolve toggle
-	ofxDatGuiToggle* modelDissolvedToggle;
-	ofxDatGuiSlider* modelFrameNumSlider, * modelNeighborNumSlider, * modelCenterIdSlider, * modelNeighborRadiusSlider;
-
-	//model frame rate
-	ofxDatGuiSlider* modelFrameRateSlider;
-	//model neighbor_color&opacity
-	ofxDatGuiSlider* modelOpacitySlider;
+	//frame related
+	//ofxDatGuiSlider* modelFrameNumSlider;
+	ofxDatGuiSlider* modelCurFrameSlider,  * modelFrameRateSlider;
+	ofxDatGuiSlider* modelNeighborNumSlider, * modelCenterIdSlider, * modelNeighborRadiusSlider;
+	//model neighbor_color&color_mixing
+	ofxDatGuiSlider* modelColorMixingSlider;
 	ofxDatGuiColorPicker* modelCenterColorPicker,* modelNeighborColorPicker;
 	ofxDatGuiToggle* modelForceFieldToggle;
 	/*end model setting items*/
@@ -59,9 +57,9 @@ public:
 		_scale = 1.0;
 	}
 	void setScale(float scale) {
-		cout << "setScale " << _scale << " to " << scale << endl;
+		ofLogNotice() << "to setScale " << _scale << " to " << scale << endl;
 		if (scale == _scale) {
-			cout << "same scale " << scale << ", skip" << endl;
+			ofLogNotice() << "same scale " << scale << ", skip" << endl;
 			return;
 		}
 		ofLogNotice() << "set panel scale: " << scale;

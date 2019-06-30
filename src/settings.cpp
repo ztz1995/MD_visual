@@ -12,6 +12,8 @@ void Settings::setup() {
 	theme = new PanelTheme();
 	theme->setScale(1.3);
 	gui->setAutoDraw(false);
+	
+	//header and footer
 	gui->addHeader("Setting Panel");
 	gui->addFooter();
 	gui->getFooter()->setLabelWhenExpanded("Setting Panel - COLLAPSE");
@@ -25,30 +27,34 @@ void Settings::setup() {
 	actions->expand();
 	gui->addBreak();
 
-	//model settings:: FR, opacity, neighbor_color, neighbor_num, cent_id
+	//model settings:: frame num/current/rate/, neighbor_color, neighbor_num, cent_id
 	modelFolder = gui->addFolder("Model Settings", ofColor::green);
-	modelFrameNumSlider = modelFolder->addSlider("  Frames", 1, 20, 5);
-	modelFrameNumSlider->setPrecision(0);
+	//frame related
+	//modelFrameNumSlider = modelFolder->addSlider("  Frames", 1, 20, 5);
+	//modelFrameNumSlider->setPrecision(0);
+	modelCurFrameSlider = modelFolder->addSlider("  Current frame", 0, 0, 0);
+	modelCurFrameSlider->setPrecision(0);
+	modelFrameRateSlider = modelFolder->addSlider("  Model FR", 1, 25, 1);
+	modelFrameRateSlider->setPrecision(0);
+	//center/neighbor group related
 	modelCenterIdSlider = modelFolder->addSlider("  Center id", 0, 250, 137);
 	modelCenterIdSlider->setPrecision(0);
 	modelNeighborNumSlider = modelFolder->addSlider("  Neighbor num", 0, 100, 8);
 	modelNeighborNumSlider->setPrecision(0);
 	modelNeighborRadiusSlider = modelFolder->addSlider("  Radius", 0, 100, 50);
 	modelNeighborRadiusSlider->setPrecision(1);
-	modelFrameRateSlider = modelFolder->addSlider("  Model FR", 1, 25, 1);
-	modelFrameRateSlider->setPrecision(0);
-	// change for Opacity to Color mixing
-	//modelOpacitySlider = modelFolder->addSlider("  Opacity", 0, 255, 255);
-	modelOpacitySlider = modelFolder->addSlider("  Color mixing", 0, 255, 20);
-	modelOpacitySlider->setPrecision(0);
-	modelCenterColorPicker = modelFolder->addColorPicker("  Center color", ofColor(148, 0, 211));
-	modelNeighborColorPicker = modelFolder->addColorPicker("  Primary color", ofColor(3, 168, 158));
-	modelDissolvedToggle = modelFolder->addToggle("  Fully dissolved");
-	modelDissolvedToggle->setVisible(false); // hide 
 	modelForceFieldToggle = modelFolder->addToggle("  Show force field");
+	// change for Opacity to Color mixing
+	//modelColorMixingSlider = modelFolder->addSlider("  Opacity", 0, 255, 255);
+	modelColorMixingSlider = modelFolder->addSlider("  Color mixing", 0, 255, 20);
+	modelColorMixingSlider->setPrecision(0);
+	modelCenterColorPicker = modelFolder->addColorPicker("  Center color", ofColor(148, 0, 211));
+	modelNeighborColorPicker = modelFolder->addColorPicker("  Neighbor color", ofColor(3, 168, 158));
+
 	modelFolder->expand();
 	gui->addBreak();
 	
+	//light controls
 	lightingFolder = gui->addFolder("Lighting", ofColor::yellow);
 	lightRotateX = lightingFolder->addSlider("  Theta x", -180, 180, -130);
 	lightRotateY = lightingFolder->addSlider("  Theta y", -180, 180, 60);
@@ -59,8 +65,8 @@ void Settings::setup() {
 	infoBoard = gui->addFolder("Panel Settings", ofColor::gray);
 	//frame rate
 	FRMonitor = infoBoard->addFRM(0.1);
-	FRMonitor->setLabel("  Frame rate");
-	appFRSetter = infoBoard->addSlider("  App FR", 10, 120, 60);
+	FRMonitor->setLabel("  Realtime App FR");
+	appFRSetter = infoBoard->addSlider("  Max App FR", 10, 120, 60);
 	appFRSetter->onSliderEvent(this, &Settings::onSliderEvent);
 	opacitySlider = infoBoard->addSlider("  Panel opacity", 0, 1, 1);
 	opacitySlider->onSliderEvent(this, &Settings::onSliderEvent);
@@ -71,6 +77,7 @@ void Settings::setup() {
 
 	hintLableShot = gui->addLabel("Press \"s\" to save screenshot.");
 	hintLabelCamera = gui->addLabel("Press \"space\" to reset viewport.");
+
 	gui->setTheme(theme, true);
 }
 void Settings::update() {
@@ -89,19 +96,19 @@ void Settings::bindEventsToModel(AtomModel* model)
 	pauseButton->onButtonEvent(model, &AtomModel::onPauseButton);
 	stopButton->onButtonEvent(model, &AtomModel::onStopButton);
 
-	modelDissolvedToggle->onToggleEvent(model, &AtomModel::onDissolvedToggle);
 	// todo load data.
 	//modelFrameNumSlider->onSliderEvent(model, &AtomModel::onFrameNumSlider);
+	modelCurFrameSlider->onSliderEvent(model, &AtomModel::onCurFrameSlider);
 	modelNeighborNumSlider->onSliderEvent(model, &AtomModel::onNeighborNumSlider);
 	modelCenterIdSlider->onSliderEvent(model, &AtomModel::onCenterIdSlider);
 	modelNeighborRadiusSlider->onSliderEvent(model, &AtomModel::onNeighborRadiusSlider);
 	modelFrameRateSlider->onSliderEvent(model, &AtomModel::onFrameRateSlider);
-	modelOpacitySlider->onSliderEvent(model, &AtomModel::onOpacitySlider);
+	modelColorMixingSlider->onSliderEvent(model, &AtomModel::onOpacitySlider);
 	modelCenterColorPicker->onColorPickerEvent(model, &AtomModel::onCenterColorPicker);
 	modelNeighborColorPicker->onColorPickerEvent(model, &AtomModel::onNeighborColorPicker);
 	modelForceFieldToggle->onToggleEvent(model, &AtomModel::onForceFieldToggle);
 	//update panel like slider max value
-	modelFrameNumSlider->setMax(model->max_frame_num);
+	//modelFrameNumSlider->setMax(model->max_frame_num);
 }
 
 

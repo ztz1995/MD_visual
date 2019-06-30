@@ -219,7 +219,9 @@ void AtomModel::onStopButton(ofxDatGuiButtonEvent e)
 
 void AtomModel::onCurFrameSlider(ofxDatGuiSliderEvent e)
 {
-	cur_frame = e.target->getValue();
+	// cur_frame = e.target->getValue();
+	init_frame = e.target->getValue();
+	ofResetElapsedTimeCounter();
 	ofLogNotice() << "onCurFrameSlider called: " << e.target->getValue();
 }
 

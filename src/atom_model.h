@@ -1,7 +1,7 @@
 #pragma once
-#include "atom_structure_res.h"
 #include "settings.h"
-#include "MarchingCubes.h"
+#include "atom_structure_res.h"
+#include "marching_cubes.h"
 
 class AtomModel {
 	friend class Settings;

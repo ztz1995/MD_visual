@@ -28,9 +28,6 @@
     <ClCompile Include="..\..\addons\ofxDatGui\src\ofxDatGui.cpp">
       <Filter>addons\ofxDatGui\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MarchingCubes.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\particle\particle.cpp">
       <Filter>src\particle</Filter>
     </ClCompile>
@@ -41,6 +38,9 @@
       <Filter>src\particle</Filter>
     </ClCompile>
     <ClCompile Include="src\atom_structure_res.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\marching_cubes.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -152,9 +152,6 @@
     <ClInclude Include="..\..\addons\ofxDatGui\src\themes\ofxDatGuiThemes.h">
       <Filter>addons\ofxDatGui\src\themes</Filter>
     </ClInclude>
-    <ClInclude Include="src\MarchingCubes.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\particle\particle.h">
       <Filter>src\particle</Filter>
     </ClInclude>
@@ -165,6 +162,9 @@
       <Filter>src\particle</Filter>
     </ClInclude>
     <ClInclude Include="src\atom_structure_res.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\marching_cubes.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

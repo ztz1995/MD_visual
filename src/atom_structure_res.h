@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include "ofMain.h"
-#include "MarchingCubes.h"
+#include "marching_cubes.h"
 #include "particle/particle.h"
 #include "particle/particleSystem.h"
 

@@ -157,6 +157,7 @@ void Atom3D::setup(string prefix) {
 	else {
 		ifstream in_file(filepath);
 		in_file >> atom_info;
+		cout << " *loading frame 0...";
 		//ofLogNotice() << "file loaded: " << fp;
 	}
 	axis_length.push_back(atom_info["length"]);
@@ -184,14 +185,13 @@ void Atom3D::update(string prefix, int frames) {
 			if (std::filesystem::exists(filepath)) {
 				ifstream in_file(filepath);
 				in_file >> atom_info;
+				cout << "\r *loading frame " << frame_no << "...";
 				//ofLogNotice() << "file loaded: " << fp;
 				axis_length.push_back(atom_info["length"]);
 				for (ofJson::iterator it = atom_info.begin(); it != atom_info.end(); ++it) {
 					if (it.key() != "length") {
 						ofJson atm_json = it.value();
 						int id = atm_json["id"], group_id = atm_json["group_id"];
-						// test
-						//group_map[group_id].atom_map[id].update(atm_json, axis_length[frame_no]);
 						group_map[group_id]->atom_map[id]->update(atm_json, axis_length[frame_no]);
 					}
 				}

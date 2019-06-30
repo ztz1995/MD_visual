@@ -1,4 +1,4 @@
-#include "MarchingCubes.h"
+#include "marching_cubes.h"
 
 float fLevel = .5;
 

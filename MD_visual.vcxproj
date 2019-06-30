@@ -182,7 +182,7 @@
   <ItemGroup>
     <ClCompile Include="src\atom_structure_res.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\MarchingCubes.cpp" />
+    <ClCompile Include="src\marching_cubes.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\atom_model.cpp" />
     <ClCompile Include="src\particle\particle.cpp" />
@@ -195,7 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\atom_structure_res.h" />
-    <ClInclude Include="src\MarchingCubes.h" />
+    <ClInclude Include="src\marching_cubes.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\atom_model.h" />
     <ClInclude Include="src\particle\particle.h" />
